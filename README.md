@@ -2,8 +2,8 @@
 
 This code contains the following:
  
- * Bindings for the SQLite database.
- * Bindings for the libui-ng gui library.
+ * Bindings for the [SQLite](https://www.sqlite.org/) database.
+ * Bindings for the [libui-ng](https://github.com/libui-ng/libui-ng) cross platform gui library.
 
 OS support is covered for the **Windows** and **Linux** platforms.
 For now only `X86_64` variants are supported.
