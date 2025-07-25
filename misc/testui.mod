@@ -7,7 +7,9 @@ BEGIN TRACE("Button clicked!");
 END OnClick;
 
 PROCEDURE OnClosing(): INTEGER;
-BEGIN RETURN INTEGER(UI.Quit());
+BEGIN
+    UI.Quit();
+    RETURN 0
 END OnClosing;
 
 PROCEDURE Test();

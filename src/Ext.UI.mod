@@ -49,9 +49,8 @@ CONST
 
 TYPE
     ADDRESS = SYSTEM.ADDRESS;
-    SIZE_T = LENGTH;
     InitOptions* = RECORD-
-        size* : SIZE_T;
+        size* : LENGTH;
     END;
 
     TM* = RECORD-
@@ -435,10 +434,8 @@ END CStringCopy;
 *)
 
 (** Signal Quit to application *)
-PROCEDURE Quit*(): BOOLEAN;
-BEGIN
-    uiQuit();
-    RETURN TRUE;
+PROCEDURE Quit*();
+BEGIN uiQuit();
 END Quit;
 
 (*
