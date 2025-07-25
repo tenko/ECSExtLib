@@ -37,16 +37,16 @@ BEGIN
     IF ~db.Open("", 0) THEN TRACE("Failed to open database"); RETURN END;
     IF ~db.Execute(sql) THEN Error(); RETURN END;
     IF ~db.Prepare(stmt, "SELECT * from Cars WHERE Price > ?;") THEN Error(); RETURN END;
-    IF ~stmt.BindReal(1, 9000.) THEN Error(); RETURN END;
+    IF ~stmt.BindInteger(1, 9000) THEN Error(); RETURN END;
     OSStream.StdOut.WriteString("ID      Name    Price   "); OSStream.StdOut.WriteNL;
-    OSStream.StdOut.WriteString("------------------------"); OSStream.StdOut.WriteNL;    
+    OSStream.StdOut.WriteString("------------------------"); OSStream.StdOut.WriteNL;
     WHILE stmt.Step() # Sqlite.DONE DO
         OSStream.StdOut.FormatInteger(stmt.ColumnInt(0), 2, {});
         IGNORE(stmt.ColumnText(s, 1));
         OSStream.StdOut.FormatString(s, 12, 0, Const.Right);
         OSStream.StdOut.FormatInteger(stmt.ColumnInt(2), 8, {});
         OSStream.StdOut.WriteNL;
-     END;
+    END;
     db.Close();
 END Test;
     

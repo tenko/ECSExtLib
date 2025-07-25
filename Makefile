@@ -9,10 +9,12 @@ ifdef MSYSTEM
 	PRG = .exe
 	SYS = win
 	ECS = /c/EigenCompilerSuite/
+	RTS = $(ECS)runtime/win64api.obf
 else
 	PRG = 
 	SYS = linux
 	ECS = ~/.local/lib/ecs/
+	RST = 
 endif
 
 .PHONY: all
@@ -74,7 +76,7 @@ testsqlite$(PRG): misc/testsqlite.mod extsqlite.lib
 	@echo building $@
 	@mkdir -p build
 	@cd build && cp -f ../misc/testsqlite.mod .
-	@cd build && $(OB) $(notdir $<) ../extsqlite.lib $(ECS)/runtime/std.lib
+	@cd build && $(OB) $(notdir $<) ../extsqlite.lib $(ECS)/runtime/std.lib $(RTS)
 	@cp build/testsqlite$(PRG) testsqlite$(PRG)
 	@./testsqlite$(PRG)
 	
