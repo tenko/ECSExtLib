@@ -1,4 +1,4 @@
-// SQLITE API wrapper for Linux
+// SDL3 API wrapper for Linux
 // Copyright (C) Florian Negele
 
 // This file is part of the Eigen Compiler Suite.
@@ -23,6 +23,6 @@
 
 #include "linuxlib.hpp"
 
-LIBRARY (sqlite, "libsqlite3.so")
-#define SQLITEFUNCTION(name, parameters) FUNCTION (sqlite, name, parameters)
-#include "sqlite.cpp"
+LIBRARY (sdl3, "libSDL3.so")
+#define SDL3FUNCTION(name, parameters) FUNCTION (sdl3, name, parameters)
+#include "sdl3.cpp"

@@ -18,7 +18,7 @@ else
 endif
 
 .PHONY: all
-all : extui.lib extsqlite.lib
+all : extui.lib extsqlite.lib extsdl3.lib
 
 build/%.obf: src/%.asm
 	@echo compiling $< 
@@ -30,14 +30,6 @@ build/%.obf: src/%.mod
 	@mkdir -p build
 	@cd build && ecsd -c $(addprefix ../, $<)
 
-build/ui$(SYS).obf: src/ui$(SYS).cpp
-	@echo building $@:
-	@mkdir -p build
-	@cd build && cp ../src/$(SYS)lib.hpp .
-	@cd build && cp ../src/ui.cpp .
-	@cd build && cp ../src/ui$(SYS).cpp .
-	@cd build && $(OB) -c $(notdir $<)
-
 build/sqlite$(SYS).obf: src/sqlite$(SYS).cpp
 	@echo building $@:
 	@mkdir -p build
@@ -45,26 +37,20 @@ build/sqlite$(SYS).obf: src/sqlite$(SYS).cpp
 	@cd build && cp ../src/sqlite.cpp .
 	@cd build && cp ../src/sqlite$(SYS).cpp .
 	@cd build && $(OB) -c $(notdir $<)
-	
-build/Ext.UI.obf : src/Ext.UI.mod
-build/ui$(SYS).obf :  src/$(SYS)lib.hpp src/ui$(SYS).cpp src/ui.cpp
-build/uishim$(SYS).obf : src/uishim$(SYS).asm
+
+build/sdl3$(SYS).obf: src/sdl3$(SYS).cpp
+	@echo building $@:
+	@mkdir -p build
+	@cd build && cp ../src/$(SYS)lib.hpp .
+	@cd build && cp ../src/sdl3.cpp .
+	@cd build && cp ../src/sdl3$(SYS).cpp .
+	@cd build && $(OB) -c $(notdir $<)
+
 build/Ext.Sqlite.obf : src/Ext.Sqlite.mod
 build/sqlite$(SYS).obf :  src/$(SYS)lib.hpp src/sqlite$(SYS).cpp src/sqlite.cpp
 
-extui.lib : build/Ext.UI.obf build/ui$(SYS).obf build/uishim$(SYS).obf
-	@echo linking $@
-	@-rm $@
-	@touch $@
-	@linklib $@ $^
-	
-testui$(PRG): misc/testui.mod extui.lib
-	@echo building $@
-	@mkdir -p build
-	@cd build && cp -f ../misc/testui.mod .
-	@cd build && $(OB) $(notdir $<) ../extui.lib
-	@cp build/testui$(PRG) testui$(PRG)
-	#@./testui$(PRG)
+build/Ext.SDL3.obf : src/Ext.SDL3.mod
+build/sdl3$(SYS).obf :  src/$(SYS)lib.hpp src/sdl3$(SYS).cpp src/sdl3.cpp
 
 extsqlite.lib : build/Ext.Sqlite.obf build/sqlite$(SYS).obf
 	@echo linking $@
@@ -79,6 +65,20 @@ testsqlite$(PRG): misc/testsqlite.mod extsqlite.lib
 	@cd build && $(OB) $(notdir $<) ../extsqlite.lib $(ECS)/runtime/std.lib $(RTS)
 	@cp build/testsqlite$(PRG) testsqlite$(PRG)
 	@./testsqlite$(PRG)
+
+extsdl3.lib : build/Ext.SDL3.obf build/sdl3$(SYS).obf
+	@echo linking $@
+	@-rm $@
+	@touch $@
+	@linklib $@ $^
+
+testsdl3$(PRG): misc/testsdl3.mod extsdl3.lib
+	@echo building $@
+	@mkdir -p build
+	@cd build && cp -f ../misc/testsdl3.mod .
+	@cd build && $(OB) $(notdir $<) ../extsdl3.lib $(ECS)/runtime/std.lib $(RTS)
+	@cp build/testsdl3$(PRG) testsdl3$(PRG)
+	@./testsdl3$(PRG)
 	
 .PHONY: clean
 clean:

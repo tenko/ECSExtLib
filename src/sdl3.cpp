@@ -1,0 +1,34 @@
+// SDL3 API wrapper
+// SDL_init.h
+SDL3FUNCTION (SDL_Init, 1)
+SDL3FUNCTION (SDL_InitSubSystem, 1)
+SDL3FUNCTION (SDL_QuitSubSystem, 1)
+SDL3FUNCTION (SDL_WasInit, 1)
+SDL3FUNCTION (SDL_Quit, 0)
+SDL3FUNCTION (SDL_SetAppMetadata, 3)
+// SDL_error.h
+SDL3FUNCTION (SDL_GetError, 0)
+// SDL_events.h
+SDL3FUNCTION (SDL_PollEvent, 1)
+// SDL_log.h
+SDL3FUNCTION (SDL_SetLogPriorities, 1)
+SDL3FUNCTION (SDL_SetLogPriority, 2)
+SDL3FUNCTION (SDL_GetLogPriority, 1)
+SDL3FUNCTION (SDL_ResetLogPriorities, 0)
+SDL3FUNCTION (SDL_SetLogPriorityPrefix, 2)
+SDL3FUNCTION (SDL_Log, 2)
+SDL3FUNCTION (SDL_LogMessage, 4)
+// SDL_render.h
+SDL3FUNCTION (SDL_CreateRenderer, 2)
+SDL3FUNCTION (SDL_CreateWindowAndRenderer, 6)
+SDL3FUNCTION (SDL_SetRenderLogicalPresentation, 4)
+SDL3FUNCTION (SDL_RenderClear, 1)
+SDL3FUNCTION (SDL_SetRenderDrawColorFloat, 5)
+SDL3FUNCTION (SDL_RenderPresent, 1)
+// SDL_stdinc.h
+SDL3FUNCTION (SDL_sin, 1)
+// SDL_video.h
+SDL3FUNCTION (SDL_CreateWindow, 4)
+// SDL_timer.h
+SDL3FUNCTION (SDL_GetTicks, 0)
+SDL3FUNCTION (SDL_Delay, 1)

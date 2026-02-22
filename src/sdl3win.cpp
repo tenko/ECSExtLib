@@ -1,4 +1,4 @@
-// SQLITE API wrapper for Linux
+// SDL3 API wrapper for Windows
 // Copyright (C) Florian Negele
 
 // This file is part of the Eigen Compiler Suite.
@@ -21,8 +21,8 @@
 // and a copy of the ECS Runtime Support Exception along with
 // the ECS.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "linuxlib.hpp"
+#include "winlib.hpp"
 
-LIBRARY (sqlite, "libsqlite3.so")
-#define SQLITEFUNCTION(name, parameters) FUNCTION (sqlite, name, parameters)
-#include "sqlite.cpp"
+LIBRARY (sdl3, "libSDL3.dll")
+#define SDL3FUNCTION(name, parameters) FUNCTION (sdl3, name, parameters)
+#include "sdl3.cpp"
