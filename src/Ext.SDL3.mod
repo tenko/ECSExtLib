@@ -14,9 +14,24 @@ TYPE Event* = RECORD-
 	padding*: ARRAY 128 OF CHAR;
 END;
 
+(* SDL_rect.h *)
+TYPE FPoint* = RECORD-
+    x* : REAL32;
+    y* : REAL32;
+END;
+
+TYPE FRect* = RECORD-
+    x* : REAL32;
+    y* : REAL32;
+    w* : REAL32;
+    h* : REAL32;
+END;
+
 (* SDL_render.h *)
 TYPE Renderer* = RECORD- END;
+TYPE PtrRenderer* = POINTER TO VAR Renderer;
 TYPE Window* = RECORD- END;
+TYPE PtrWindow* = POINTER TO VAR Window;
 
 (* SDL_init.h *)
 CONST INIT_AUDIO*       = 00000010H;
@@ -62,6 +77,12 @@ CONST LOG_PRIORITY_WARN*        = 5;
 CONST LOG_PRIORITY_ERROR*       = 6;
 CONST LOG_PRIORITY_CRITICAL*    = 7;
 CONST LOG_PRIORITY_COUNT*       = 8;
+
+(* SDL_pixels.h *)
+CONST ALPHA_OPAQUE*             = 255;
+CONST ALPHA_OPAQUE_FLOAT*       = 1.0;
+CONST ALPHA_TRANSPARENT*        = 0;
+CONST ALPHA_TRANSPARENT_FLOAT*  = 0.0;
 
 (* SDL_render.h *)
 CONST LOGICAL_PRESENTATION_DISABLED*        = 0;
@@ -174,6 +195,13 @@ BEGIN SDLLog(PTR(msg[0]), 0)
 END LogStr;
 
 (* SDL_render.h *)
+PROCEDURE ^ SDLCreateWindowAndRenderer ["SDL_CreateWindowAndRenderer"] (title: POINTER TO VAR- CHAR; width, height: INTEGER; flags: Uint64; window : SYSTEM.ADDRESS; renderer : SYSTEM.ADDRESS): BOOLEAN;
+    
+(** Create a window and default renderer. *)
+PROCEDURE CreateWindowAndRenderer*(title-: ARRAY OF CHAR; width, height: INTEGER; flags: Uint64; VAR window : PtrWindow; VAR renderer : PtrRenderer): BOOLEAN;
+BEGIN RETURN SDLCreateWindowAndRenderer(PTR(title[0]), width, height, flags, SYSTEM.ADR(window), SYSTEM.ADR(renderer))
+END CreateWindowAndRenderer;
+
 PROCEDURE ^ SDLCreateRenderer ["SDL_CreateRenderer"] (window : POINTER TO VAR Window; name: POINTER TO VAR- CHAR): POINTER TO VAR Renderer;
 
 (** Create a 2D rendering context for a window. *)
@@ -187,12 +215,48 @@ BEGIN
 END CreateRenderer;
 
 PROCEDURE ^ SetRenderLogicalPresentation* ["SDL_SetRenderLogicalPresentation"] (renderer : POINTER TO VAR Renderer; w, h : INTEGER; mode: INTEGER): BOOLEAN;
-PROCEDURE ^ RenderClear* ["SDL_RenderClear"] (renderer : POINTER TO VAR Renderer): BOOLEAN;
+PROCEDURE ^ SDLSetRenderDrawColor* ["SDL_SetRenderDrawColor"] (renderer : POINTER TO VAR Renderer; r, g, b, a: Uint8): BOOLEAN;
+(* Set the color used for drawing operations. *)
+PROCEDURE SetRenderDrawColor*(renderer : POINTER TO VAR Renderer; r, g, b, a: INTEGER): BOOLEAN;
+BEGIN RETURN SDLSetRenderDrawColor(renderer, Uint8(r), Uint8(g), Uint8(b), Uint8(a))
+END SetRenderDrawColor;
 PROCEDURE ^ SetRenderDrawColorFloat* ["SDL_SetRenderDrawColorFloat"] (renderer : POINTER TO VAR Renderer; r, g, b, a: REAL32): BOOLEAN;
+PROCEDURE ^ RenderClear* ["SDL_RenderClear"] (renderer : POINTER TO VAR Renderer): BOOLEAN;
+PROCEDURE ^ SDLRenderFillRect* ["SDL_RenderFillRect"] (renderer : POINTER TO VAR Renderer; rect : SYSTEM.ADDRESS): BOOLEAN;
+(** Fill a rectangle on the current rendering target with the drawing color at subpixel precision. *)
+PROCEDURE RenderFillRect*(renderer : POINTER TO VAR Renderer; rect- : FRect): BOOLEAN;
+BEGIN RETURN SDLRenderFillRect(renderer, SYSTEM.ADR(rect))
+END RenderFillRect;
+PROCEDURE ^ SDLRenderLines* ["SDL_RenderLines"] (renderer : POINTER TO VAR Renderer; points : SYSTEM.ADDRESS; count : INTEGER): BOOLEAN;
+(* Draw a series of connected lines on the current rendering target at subpixel precision. *)
+PROCEDURE RenderLines*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint): BOOLEAN;
+BEGIN RETURN SDLRenderLines(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, LEN(points)))
+END RenderLines;
+PROCEDURE ^ SDLRenderLine* ["SDL_RenderLine"] (renderer : POINTER TO VAR Renderer; x1, y1, x2, y2 : REAL32): BOOLEAN;
+(* Draw a line on the current rendering target at subpixel precision. *)
+PROCEDURE RenderLine*(renderer : POINTER TO VAR Renderer; x1, y1, x2, y2 : REAL32): BOOLEAN;
+VAR points : ARRAY 2 OF FPoint;
+BEGIN
+    (* Note : Workaround. Probably bug in argument calling with floats *)
+    points[0].x := x1; points[0].y := y1;
+    points[1].x := x2; points[1].y := y2;
+    RETURN SDLRenderLines(renderer, SYSTEM.ADR(points[0]), 2)
+END RenderLine;
+PROCEDURE ^ SDLRenderPoints* ["SDL_RenderPoints"] (renderer : POINTER TO VAR Renderer; points : SYSTEM.ADDRESS; count : INTEGER): BOOLEAN;
+(** Draw multiple points on the current rendering target at subpixel precision. *)
+PROCEDURE RenderPoints*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint): BOOLEAN;
+BEGIN RETURN SDLRenderPoints(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, LEN(points)))
+END RenderPoints;
+PROCEDURE ^ SDLRenderRect* ["SDL_RenderRect"] (renderer : POINTER TO VAR Renderer; rect : SYSTEM.ADDRESS): BOOLEAN;
+(** Draw a rectangle on the current rendering target at subpixel precision. *)
+PROCEDURE RenderRect*(renderer : POINTER TO VAR Renderer; rect- : FRect): BOOLEAN;
+BEGIN RETURN SDLRenderRect(renderer, SYSTEM.ADR(rect))
+END RenderRect;
 PROCEDURE ^ RenderPresent* ["SDL_RenderPresent"] (renderer : POINTER TO VAR Renderer): BOOLEAN;
 
 (* SDL_stdinc.h *)
 PROCEDURE ^ sin* ["SDL_sin"] (x : REAL64): REAL64;
+PROCEDURE ^ randf* ["SDL_randf"] (): REAL32;
 
 (* SDL_timer.h *)
 PROCEDURE ^ GetTicks* ["SDL_GetTicks"] (): Uint64;

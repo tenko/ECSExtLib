@@ -18,7 +18,7 @@ else
 endif
 
 .PHONY: all
-all : extui.lib extsqlite.lib extsdl3.lib
+all : extsqlite.lib extsdl3.lib
 
 build/%.obf: src/%.asm
 	@echo compiling $< 

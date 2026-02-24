@@ -23,6 +23,6 @@
 
 #include "winlib.hpp"
 
-LIBRARY (sdl3, "libSDL3.dll")
+LIBRARY (sdl3, "SDL3.dll")
 #define SDL3FUNCTION(name, parameters) FUNCTION (sdl3, name, parameters)
 #include "sdl3.cpp"
