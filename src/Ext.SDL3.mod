@@ -231,8 +231,8 @@ BEGIN RETURN SDLRenderFillRect(renderer, SYSTEM.ADR(rect))
 END RenderFillRect;
 PROCEDURE ^ SDLRenderLines* ["SDL_RenderLines"] (renderer : POINTER TO VAR Renderer; points : SYSTEM.ADDRESS; count : INTEGER): BOOLEAN;
 (* Draw a series of connected lines on the current rendering target at subpixel precision. *)
-PROCEDURE RenderLines*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint): BOOLEAN;
-BEGIN RETURN SDLRenderLines(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, LEN(points)))
+PROCEDURE RenderLines*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint; count : LENGTH): BOOLEAN;
+BEGIN RETURN SDLRenderLines(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, count))
 END RenderLines;
 PROCEDURE ^ SDLRenderLine* ["SDL_RenderLine"] (renderer : POINTER TO VAR Renderer; x1, y1, x2, y2 : REAL32): BOOLEAN;
 (* Draw a line on the current rendering target at subpixel precision. *)
@@ -246,14 +246,24 @@ BEGIN
 END RenderLine;
 PROCEDURE ^ SDLRenderPoints* ["SDL_RenderPoints"] (renderer : POINTER TO VAR Renderer; points : SYSTEM.ADDRESS; count : INTEGER): BOOLEAN;
 (** Draw multiple points on the current rendering target at subpixel precision. *)
-PROCEDURE RenderPoints*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint): BOOLEAN;
-BEGIN RETURN SDLRenderPoints(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, LEN(points)))
+PROCEDURE RenderPoints*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint; count : LENGTH): BOOLEAN;
+BEGIN RETURN SDLRenderPoints(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, count))
 END RenderPoints;
 PROCEDURE ^ SDLRenderRect* ["SDL_RenderRect"] (renderer : POINTER TO VAR Renderer; rect : SYSTEM.ADDRESS): BOOLEAN;
 (** Draw a rectangle on the current rendering target at subpixel precision. *)
 PROCEDURE RenderRect*(renderer : POINTER TO VAR Renderer; rect- : FRect): BOOLEAN;
 BEGIN RETURN SDLRenderRect(renderer, SYSTEM.ADR(rect))
 END RenderRect;
+PROCEDURE ^ SDLRenderRects* ["SDL_RenderRects"] (renderer : POINTER TO VAR Renderer; rects : SYSTEM.ADDRESS; count : INTEGER): BOOLEAN;
+(** Draw some number of rectangles on the current rendering target at subpixel precision. *)
+PROCEDURE RenderRects*(renderer : POINTER TO VAR Renderer; rects- : ARRAY OF FRect; count : LENGTH): BOOLEAN;
+BEGIN RETURN SDLRenderRects(renderer, SYSTEM.ADR(rects[0]), SYSTEM.VAL(INTEGER, count))
+END RenderRects;
+PROCEDURE ^ SDLRenderFillRects* ["SDL_RenderFillRects"] (renderer : POINTER TO VAR Renderer; rects : SYSTEM.ADDRESS; count : INTEGER): BOOLEAN;
+(** Fill some number of rectangles on the current rendering target with the drawing color at subpixel precision. *)
+PROCEDURE RenderFillRects*(renderer : POINTER TO VAR Renderer; rects- : ARRAY OF FRect; count : LENGTH): BOOLEAN;
+BEGIN RETURN SDLRenderFillRects(renderer, SYSTEM.ADR(rects[0]), SYSTEM.VAL(INTEGER, count))
+END RenderFillRects;
 PROCEDURE ^ RenderPresent* ["SDL_RenderPresent"] (renderer : POINTER TO VAR Renderer): BOOLEAN;
 
 (* SDL_stdinc.h *)
