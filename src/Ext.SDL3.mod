@@ -196,8 +196,9 @@ BEGIN SDLLog(PTR(msg[0]), 0)
 END LogStr;
 
 (* SDL_render.h *)
+PROCEDURE ^ DestroyRenderer* ["SDL_DestroyRenderer"] (renderer : POINTER TO VAR Renderer);
+
 PROCEDURE ^ SDLCreateWindowAndRenderer ["SDL_CreateWindowAndRenderer"] (title: POINTER TO VAR- CHAR; width, height: INTEGER; flags: Uint64; window : SYSTEM.ADDRESS; renderer : SYSTEM.ADDRESS): BOOLEAN;
-    
 (** Create a window and default renderer. *)
 PROCEDURE CreateWindowAndRenderer*(title-: ARRAY OF CHAR; width, height: INTEGER; flags: Uint64; VAR window : PtrWindow; VAR renderer : PtrRenderer): BOOLEAN;
 BEGIN RETURN SDLCreateWindowAndRenderer(PTR(title[0]), width, height, flags, SYSTEM.ADR(window), SYSTEM.ADR(renderer))
@@ -269,6 +270,8 @@ PROCEDURE ^ GetTicks* ["SDL_GetTicks"] (): Uint64;
 PROCEDURE ^ Delay* ["SDL_Delay"] (ms : Uint32);
 
 (* SDL_video.h *)
+PROCEDURE ^ DestroyWindow* ["SDL_DestroyWindow"] (window: POINTER TO VAR Window);
+
 PROCEDURE ^ SDLCreateWindow ["SDL_CreateWindow"] (title: POINTER TO VAR- CHAR; width, height: INTEGER; flags: Uint64): POINTER TO VAR Window;
 (** Create a window with the specified dimensions and flags.  *)
 PROCEDURE CreateWindow*(title-: ARRAY OF CHAR; width, height: INTEGER; flags: Uint64): POINTER TO VAR Window;

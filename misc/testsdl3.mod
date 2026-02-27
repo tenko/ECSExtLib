@@ -292,6 +292,8 @@ BEGIN
        
         IGNORE(SDL3.RenderPresent(renderer));  (* put it all on the screen! *)
     END;
+    IF renderer # NIL THEN SDL3.DestroyRenderer(renderer) END;
+    IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END Example4;
 

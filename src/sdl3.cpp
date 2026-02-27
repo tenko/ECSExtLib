@@ -20,6 +20,7 @@ SDL3FUNCTION (SDL_Log, 2)
 SDL3FUNCTION (SDL_LogMessage, 4)
 // SDL_render.h
 SDL3FUNCTION (SDL_CreateRenderer, 2)
+SDL3FUNCTION (SDL_DestroyRenderer, 1)
 SDL3FUNCTION (SDL_CreateWindowAndRenderer, 6)
 SDL3FUNCTION (SDL_SetRenderLogicalPresentation, 4)
 SDL3FUNCTION (SDL_SetRenderDrawColor, 5)
@@ -41,6 +42,7 @@ SDL3FUNCTION (SDL_rand, 1)
 SDL3FUNCTION (SDL_randf, 0)
 // SDL_video.h
 SDL3FUNCTION (SDL_CreateWindow, 4)
+SDL3FUNCTION (SDL_DestroyWindow, 1)
 // SDL_timer.h
 SDL3FUNCTION (SDL_GetTicks, 0)
 SDL3FUNCTION (SDL_Delay, 1)
