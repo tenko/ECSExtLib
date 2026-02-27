@@ -93,6 +93,7 @@ CONST LOGICAL_PRESENTATION_INTEGER_SCALE*   = 4;
 
 (* SDL_stdinc.h *)
 CONST PI_D* = 3.141592653589793238462643383279502884;
+CONST PI_F* = REAL32(3.141592653589793238462643383279502884);
     
 (* SDL_video.h *)
 CONST WINDOW_FULLSCREEN*            = Uint64(0000000000000001H); 
@@ -255,7 +256,12 @@ END RenderRect;
 PROCEDURE ^ RenderPresent* ["SDL_RenderPresent"] (renderer : POINTER TO VAR Renderer): BOOLEAN;
 
 (* SDL_stdinc.h *)
+PROCEDURE ^ cos* ["SDL_cos"] (x : REAL64): REAL64;
+PROCEDURE ^ cosf* ["SDL_cosf"] (x : REAL32): REAL32;
 PROCEDURE ^ sin* ["SDL_sin"] (x : REAL64): REAL64;
+PROCEDURE ^ sinf* ["SDL_sinf"] (x : REAL32): REAL32;
+PROCEDURE ^ srand* ["SDL_srand"] (seed : Uint64);
+PROCEDURE ^ rand* ["SDL_rand"] (n : Sint32): Sint32;
 PROCEDURE ^ randf* ["SDL_randf"] (): REAL32;
 
 (* SDL_timer.h *)

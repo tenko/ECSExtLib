@@ -125,6 +125,176 @@ BEGIN
     SDL3.Quit;
 END Example2;
 
+(* https://examples.libsdl.org/SDL3/renderer/03-lines/ *)
+PROCEDURE Example3();
+VAR
+    window : SDL3.PtrWindow;
+    renderer : SDL3.PtrRenderer;
+    line_points : ARRAY 9 OF SDL3.FPoint;
+    event : SDL3.Event;
+    i : LENGTH;
+    size, x, y, r : REAL32;
+    quit : BOOLEAN;
 BEGIN
-    Example2;
+    IGNORE(SDL3.SetAppMetadata("Example Renderer Lines", "1.0", "com.example.renderer-lines"));
+    IF ~SDL3.Init(SDL3.INIT_VIDEO) THEN
+        SDL3.LogStr("Couldn't initialize SDL:");
+        SDL3.Log(SDL3.GetError());
+        SDL3.Quit;
+        RETURN
+    END;
+    IF ~SDL3.CreateWindowAndRenderer("examples/renderer/lines", 640, 480, SDL3.WINDOW_RESIZABLE, window, renderer) THEN
+        SDL3.LogStr("Couldn't create window/renderer:");
+        SDL3.Log(SDL3.GetError());
+        SDL3.Quit;
+        RETURN
+    END;
+    IGNORE(SDL3.SetRenderLogicalPresentation(renderer,640, 480, SDL3.LOGICAL_PRESENTATION_LETTERBOX));
+    
+    (* Lines (line segments, really) are drawn in terms of points: a set of
+       X and Y coordinates, one set for each end of the line.
+       (0, 0) is the top left of the window, and larger numbers go down
+       and to the right. This isn't how geometry works, but this is pretty
+       standard in 2D graphics. *)
+    
+    line_points[0].x := 100; line_points[0].y := 354;
+    line_points[1].x := 220; line_points[1].y := 230;
+    line_points[2].x := 140; line_points[2].y := 230;
+    line_points[3].x := 320; line_points[3].y := 100;
+    line_points[4].x := 500; line_points[4].y := 230;
+    line_points[5].x := 420; line_points[5].y := 230;
+    line_points[6].x := 540; line_points[6].y := 354;
+    line_points[7].x := 400; line_points[7].y := 354;
+    line_points[8].x := 100; line_points[8].y := 354;
+    
+    size := 30.0;
+    x := 320.0;
+    y := 95.0 - (size / 2.0);
+    
+    quit := FALSE;
+    WHILE ~quit DO
+        WHILE SDL3.PollEvent(PTR(event)) DO
+            IF event.type = SDL3.EVENT_QUIT THEN
+                quit := TRUE
+            END;
+        END;
+        (* as you can see from this, rendering draws over whatever was drawn before it. *)
+        IGNORE(SDL3.SetRenderDrawColor(renderer, 100, 100, 100, SDL3.ALPHA_OPAQUE));  (* grey, full alpha *)
+        IGNORE(SDL3.RenderClear(renderer));  (* start with a blank canvas. *)
+        
+        (* You can draw lines, one at a time, like these brown ones... *)
+        IGNORE(SDL3.SetRenderDrawColor(renderer, 127, 49, 32, SDL3.ALPHA_OPAQUE));
+        IGNORE(SDL3.RenderLine(renderer, 240, 450, 400, 450));
+        IGNORE(SDL3.RenderLine(renderer, 240, 356, 400, 356));
+        IGNORE(SDL3.RenderLine(renderer, 240, 356, 240, 450));
+        IGNORE(SDL3.RenderLine(renderer, 400, 356, 400, 450));
+        
+        (* You can also draw a series of connected lines in a single batch... *)
+        IGNORE(SDL3.SetRenderDrawColor(renderer, 0, 255, 0, SDL3.ALPHA_OPAQUE));
+        IGNORE(SDL3.RenderLines(renderer, line_points));
+        
+        (* here's a bunch of lines drawn out from a center point in a circle. *)
+        (* we randomize the color of each line, so it functions as animation. *)
+        FOR i := 0 TO 359 DO
+            r := REAL32(i) * (SDL3.PI_F / 180.0);
+            IGNORE(SDL3.SetRenderDrawColor(renderer, SDL3.rand(256), SDL3.rand(256), SDL3.rand(256), SDL3.ALPHA_OPAQUE));
+            IGNORE(SDL3.RenderLine(renderer, x, y, x + SDL3.cosf(r) * size, y + SDL3.sinf(r) * size));
+        END;
+        
+        (* put it all on the screen! *)
+        IGNORE(SDL3.RenderPresent(renderer));
+    END;
+    SDL3.Quit;
+END Example3;
+
+(* https://examples.libsdl.org/SDL3/renderer/04-points/ *)
+PROCEDURE Example4();
+CONST
+    WINDOW_WIDTH = 640;
+    WINDOW_HEIGHT = 480;
+    NUM_POINTS = 500;
+    MIN_PIXELS_PER_SECOND = 30;
+    MAX_PIXELS_PER_SECOND = 60;
+VAR
+    window : SDL3.PtrWindow;
+    renderer : SDL3.PtrRenderer;
+    points : ARRAY NUM_POINTS OF SDL3.FPoint;
+    point_speeds : ARRAY NUM_POINTS OF REAL32;
+    now, last_time : SDL3.Uint64;
+    elapsed, distance : REAL32;
+    event : SDL3.Event;
+    i : LENGTH;
+    quit : BOOLEAN;
+BEGIN
+    IGNORE(SDL3.SetAppMetadata("Example Renderer Points", "1.0", "com.example.renderer-points"));
+    IF ~SDL3.Init(SDL3.INIT_VIDEO) THEN
+        SDL3.LogStr("Couldn't initialize SDL:");
+        SDL3.Log(SDL3.GetError());
+        SDL3.Quit;
+        RETURN
+    END;
+    IF ~SDL3.CreateWindowAndRenderer("examples/renderer/points", WINDOW_WIDTH, WINDOW_HEIGHT, SDL3.WINDOW_RESIZABLE, window, renderer) THEN
+        SDL3.LogStr("Couldn't create window/renderer:");
+        SDL3.Log(SDL3.GetError());
+        SDL3.Quit;
+        RETURN
+    END;
+    IGNORE(SDL3.SetRenderLogicalPresentation(renderer, WINDOW_WIDTH, WINDOW_HEIGHT, SDL3.LOGICAL_PRESENTATION_LETTERBOX));
+    
+    (* set up the data for a bunch of points. *)
+    FOR i := 0 TO LEN(points) - 1 DO
+        points[i].x := SDL3.randf() * WINDOW_WIDTH;
+        points[i].y := SDL3.randf() * WINDOW_HEIGHT;
+        point_speeds[i] := MIN_PIXELS_PER_SECOND + (SDL3.randf() * (MAX_PIXELS_PER_SECOND - MIN_PIXELS_PER_SECOND));
+    END;
+        
+    last_time := SDL3.GetTicks();
+    
+    quit := FALSE;
+    WHILE ~quit DO
+        WHILE SDL3.PollEvent(PTR(event)) DO
+            IF event.type = SDL3.EVENT_QUIT THEN
+                quit := TRUE
+            END;
+        END;
+        
+        now := SDL3.GetTicks();
+        elapsed := REAL32(now - last_time) / 1000.0;  (* seconds since last iteration *)
+        
+        (* let's move all our points a little for a new frame. *)
+        FOR i := 0 TO LEN(points) - 1 DO
+            distance := elapsed * point_speeds[i];
+            points[i].x := points[i].x + distance;
+            points[i].y := points[i].y + distance;
+            IF (points[i].x >= WINDOW_WIDTH) OR (points[i].y >= WINDOW_HEIGHT) THEN
+                (* off the screen; restart it elsewhere! *)
+                IF SDL3.rand(2) > 0 THEN
+                    points[i].x := SDL3.randf() * WINDOW_WIDTH;
+                    points[i].y := 0.0;
+                ELSE
+                    points[i].x := 0.0;
+                    points[i].y := SDL3.randf() * WINDOW_HEIGHT;
+                END;
+                point_speeds[i] := MIN_PIXELS_PER_SECOND + (SDL3.randf() * (MAX_PIXELS_PER_SECOND - MIN_PIXELS_PER_SECOND));      
+            END;
+        END;
+    
+        last_time := now;
+        
+        (* as you can see from this, rendering draws over whatever was drawn before it. *)
+        IGNORE(SDL3.SetRenderDrawColor(renderer, 0, 0, 0, SDL3.ALPHA_OPAQUE));  (* black, full alpha *)
+        IGNORE(SDL3.RenderClear(renderer));  (* start with a blank canvas. *)
+        IGNORE(SDL3.SetRenderDrawColor(renderer, 255, 255, 255, SDL3.ALPHA_OPAQUE));  (* white, full alpha *)
+        IGNORE(SDL3.RenderPoints(renderer, points)); (* draw all the points! *)
+        
+        (* You can also draw single points with SDL_RenderPoint(), but it's
+           cheaper (sometimes significantly so) to do them all at once. *)
+       
+        IGNORE(SDL3.RenderPresent(renderer));  (* put it all on the screen! *)
+    END;
+    SDL3.Quit;
+END Example4;
+
+BEGIN
+    Example4;
 END Test.
