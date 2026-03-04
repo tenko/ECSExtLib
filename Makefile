@@ -66,7 +66,7 @@ testsqlite$(PRG): misc/testsqlite.mod extsqlite.lib
 	@cp build/testsqlite$(PRG) testsqlite$(PRG)
 	@./testsqlite$(PRG)
 
-extsdl3.lib : build/Ext.SDL3.obf build/sdl3$(SYS).obf
+extsdl3.lib : build/Ext.SDL3.obf build/sdl3$(SYS).obf build/sdlwrap$(SYS).obf
 	@echo linking $@
 	@-rm $@
 	@touch $@
