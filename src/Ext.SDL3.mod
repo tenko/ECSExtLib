@@ -22,6 +22,13 @@ TYPE Color* = RECORD-
     a* : Uint8;
 END;
 
+TYPE FColor* = RECORD-
+    r* : REAL32;
+    g* : REAL32;
+    b* : REAL32;
+    a* : REAL32;
+END;
+
 TYPE Palette* = RECORD-
     ncolors : INTEGER;
     colors : POINTER TO VAR Color;
@@ -69,7 +76,14 @@ TYPE FRect* = RECORD-
     w* : REAL32;
     h* : REAL32;
 END;
-TYPE PtrPFRect* = POINTER TO VAR FRect;
+TYPE PtrFRect* = POINTER TO VAR FRect;
+
+TYPE Vertex* = RECORD-
+    position* : FPoint;
+    color* : FColor;
+    tex_coord* : FPoint;
+END;
+TYPE PtrVertex* = POINTER TO VAR Vertex;
     
 (* SDL_render.h *)
 TYPE Renderer* = RECORD- END;
@@ -83,6 +97,7 @@ TYPE Texture* = RECORD-
     refcount- : INTEGER;
 END;
 TYPE PtrTexture* = POINTER TO VAR Texture;
+
 
 (* SDL_surface.h *)
 TYPE Surface* = RECORD-
@@ -222,11 +237,18 @@ CONST LOGICAL_PRESENTATION_INTEGER_SCALE*   = 4;
 CONST TEXTUREACCESS_STATIC*     = 0;
 CONST TEXTUREACCESS_STREAMING*  = 1;
 CONST TEXTUREACCESS_TARGET*     = 2;
+CONST DEBUG_TEXT_FONT_CHARACTER_SIZE* = 8;
 
 (* SDL_stdinc.h *)
 CONST PI_D* = 3.141592653589793238462643383279502884;
 CONST PI_F* = REAL32(3.141592653589793238462643383279502884);
-    
+
+(* SDL_surface.h *)
+CONST FLIP_NONE* = 0;
+CONST FLIP_HORIZONTAL* = 1;
+CONST FLIP_VERTICAL* = 2;
+CONST FLIP_HORIZONTAL_AND_VERTICAL* = 3;
+
 (* SDL_video.h *)
 CONST WINDOW_FULLSCREEN*            = Uint64(0000000000000001H); 
 CONST WINDOW_OPENGL*                = Uint64(0000000000000002H);
@@ -365,10 +387,13 @@ PROCEDURE LockTextureToSurface*(texture : POINTER TO VAR Texture; rect : POINTER
 BEGIN RETURN SDLLockTextureToSurface(texture, rect, SYSTEM.ADR(surface))
 END LockTextureToSurface;
 
+PROCEDURE ^ SetTextureColorModFloat* ["SDL_SetTextureColorModFloat_wrap"] (texture : POINTER TO VAR Texture; r : REAL32; g : REAL32; b : REAL32): BOOLEAN;
 PROCEDURE ^ UnlockTexture* ["SDL_UnlockTexture"] (texture : POINTER TO VAR Texture);
 PROCEDURE ^ DestroyTexture* ["SDL_DestroyTexture"] (texture : POINTER TO VAR Texture);
-
 PROCEDURE ^ SetRenderLogicalPresentation* ["SDL_SetRenderLogicalPresentation"] (renderer : POINTER TO VAR Renderer; w, h : INTEGER; mode: INTEGER): BOOLEAN;
+PROCEDURE ^ SetRenderViewport* ["SDL_SetRenderViewport"] (renderer : POINTER TO VAR Renderer; rect : POINTER TO VAR Rect): BOOLEAN;
+PROCEDURE ^ SetRenderClipRect* ["SDL_SetRenderClipRect"] (renderer : POINTER TO VAR Renderer; rect : POINTER TO VAR Rect): BOOLEAN;
+PROCEDURE ^ SetRenderScale* ["SDL_SetRenderScale_wrap"] (renderer : POINTER TO VAR Renderer; scaleX: REAL32; scaleY: REAL32): BOOLEAN;
 PROCEDURE ^ SDLSetRenderDrawColor* ["SDL_SetRenderDrawColor"] (renderer : POINTER TO VAR Renderer; r, g, b, a: Uint8): BOOLEAN;
 (* Set the color used for drawing operations. *)
 PROCEDURE SetRenderDrawColor*(renderer : POINTER TO VAR Renderer; r, g, b, a: INTEGER): BOOLEAN;
@@ -387,24 +412,12 @@ PROCEDURE RenderLines*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FP
 BEGIN RETURN SDLRenderLines(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, count))
 END RenderLines;
 PROCEDURE ^ RenderLine* ["SDL_RenderLine_wrap"] (renderer : POINTER TO VAR Renderer; x1, y1, x2, y2 : REAL32): BOOLEAN;
-(* Draw a line on the current rendering target at subpixel precision. *)
-(*
-PROCEDURE RenderLine*(renderer : POINTER TO VAR Renderer; x1, y1, x2, y2 : REAL32): BOOLEAN;
-VAR points : ARRAY 2 OF FPoint;
-BEGIN
-    (* Note : Workaround. Probably bug in argument calling with floats *)
-    points[0].x := x1; points[0].y := y1;
-    points[1].x := x2; points[1].y := y2;
-    RETURN SDLRenderLines(renderer, SYSTEM.ADR(points[0]), 2)
-END RenderLine;
-*)
 PROCEDURE ^ RenderPoint* ["SDL_RenderPoint_wrap"] (renderer : POINTER TO VAR Renderer; x, y: REAL32): BOOLEAN;
 PROCEDURE ^ SDLRenderPoints* ["SDL_RenderPoints"] (renderer : POINTER TO VAR Renderer; points : SYSTEM.ADDRESS; count : INTEGER): BOOLEAN;
 (** Draw multiple points on the current rendering target at subpixel precision. *)
 PROCEDURE RenderPoints*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint; count : LENGTH): BOOLEAN;
 BEGIN RETURN SDLRenderPoints(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, count))
 END RenderPoints;
-
 PROCEDURE ^ SDLRenderRect* ["SDL_RenderRect"] (renderer : POINTER TO VAR Renderer; rect : SYSTEM.ADDRESS): BOOLEAN;
 (** Draw a rectangle on the current rendering target at subpixel precision. *)
 PROCEDURE RenderRect*(renderer : POINTER TO VAR Renderer; rect- : FRect): BOOLEAN;
@@ -421,8 +434,19 @@ PROCEDURE RenderFillRects*(renderer : POINTER TO VAR Renderer; rects- : ARRAY OF
 BEGIN RETURN SDLRenderFillRects(renderer, SYSTEM.ADR(rects[0]), SYSTEM.VAL(INTEGER, count))
 END RenderFillRects;
 
-PROCEDURE ^ RenderTexture* ["SDL_RenderTexture"] (renderer : POINTER TO VAR Renderer; texture : POINTER TO VAR Texture; srcrect : POINTER TO VAR FRect; dstrect : POINTER TO VAR FRect): BOOLEAN;
+PROCEDURE ^ RenderTexture* ["SDL_RenderTexture"] (renderer : POINTER TO VAR Renderer; texture : POINTER TO VAR Texture; srcrect : POINTER TO VAR FRect;
+                                                  dstrect : POINTER TO VAR FRect): BOOLEAN;
+PROCEDURE ^ RenderTextureRotated* ["SDL_RenderTextureRotated_wrap"] (renderer : POINTER TO VAR Renderer; texture : POINTER TO VAR Texture; srcrect : POINTER TO VAR FRect;
+                                                                     dstrect : POINTER TO VAR FRect; angle : REAL64; center : POINTER TO VAR FPoint; flip : INTEGER): BOOLEAN;
 
+PROCEDURE ^ RenderGeometry* ["SDL_RenderGeometry"] (renderer : POINTER TO VAR Renderer; texture : POINTER TO VAR Texture; vertices : POINTER TO VAR Vertex;
+                                                    num_vertices : INTEGER; indices: POINTER TO VAR INTEGER; num_indices: INTEGER): BOOLEAN;
+
+PROCEDURE ^ SDLRenderDebugText ["SDL_RenderDebugText_wrap"] (renderer : POINTER TO VAR Renderer; x: REAL32; y: REAL32; str: POINTER TO VAR- CHAR): BOOLEAN;
+PROCEDURE RenderDebugText*(renderer : POINTER TO VAR Renderer; x: REAL32; y: REAL32; str-: ARRAY OF CHAR): BOOLEAN;
+BEGIN RETURN SDLRenderDebugText(renderer, x, y, PTR(str[0]))
+END RenderDebugText;
+    
 PROCEDURE ^ RenderPresent* ["SDL_RenderPresent"] (renderer : POINTER TO VAR Renderer): BOOLEAN;
 
 (* SDL_surface.h *)
@@ -436,6 +460,7 @@ END LoadPNG;
 PROCEDURE ^ FillSurfaceRect* ["SDL_FillSurfaceRect"] (dst : POINTER TO VAR Surface; rect : POINTER TO VAR Rect; color: Uint32): BOOLEAN;
 
 (* SDL_stdinc.h *)
+PROCEDURE ^ memset* ["SDL_memset"] (dst : SYSTEM.ADDRESS; c : INTEGER;  len : Uint64): SYSTEM.ADDRESS;
 PROCEDURE ^ srand* ["SDL_srand"] (seed : Uint64);
 PROCEDURE ^ rand* ["SDL_rand"] (n : Sint32): Sint32;
 PROCEDURE ^ randf* ["SDL_randf"] (): REAL32;
