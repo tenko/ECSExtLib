@@ -55,7 +55,25 @@
 		".const _" #name "\n .duplicable \n .require _" #name "_relocation \n .alignment 8 \n .reserve 8 \n" \
 		".code " #name "\n .duplicable \n mov rax, [rip + @_" #name "] \n jmp dword @_function_call_wrapper" #parameters "\n" \
 		);
-
+	
+	#define FUNCTIONVAR(library, name, variant) asm ( \
+		".const _" #name "_symbol \n .duplicable \n .group _symbol_table \n .require _dynamic_section_" #library "\n .alignment 8 \n" \
+		".qbyte position (@_" #name "_string) + 1 \n .byte 0x12 \n .byte 0x0 \n .dbyte 0 \n .obyte 0 \n .obyte 0 \n" \
+		".const _" #name "_string \n .duplicable \n .group _string_table \n .byte \"" #name "\", 0 \n" \
+		".const _" #name "_relocation \n .duplicable \n .group _relocation_table \n .alignment 8 \n .obyte @_" #name "\n .qbyte 1 \n .qbyte index (@_" #name "_symbol) + 1 \n .obyte 0 \n" \
+		".const _" #name "\n .duplicable \n .require _" #name "_relocation \n .alignment 8 \n .reserve 8 \n" \
+		".code " #name "\n .duplicable \n mov rax, [rip + @_" #name "] \n jmp dword @_system_call_variant_" #variant "\n" \
+		);
+		
+	#define FUNCTIONRAW(library, name) asm ( \
+		".const _" #name "_symbol \n .duplicable \n .group _symbol_table \n .require _dynamic_section_" #library "\n .alignment 8 \n" \
+		".qbyte position (@_" #name "_string) + 1 \n .byte 0x12 \n .byte 0x0 \n .dbyte 0 \n .obyte 0 \n .obyte 0 \n" \
+		".const _" #name "_string \n .duplicable \n .group _string_table \n .byte \"" #name "\", 0 \n" \
+		".const _" #name "_relocation \n .duplicable \n .group _relocation_table \n .alignment 8 \n .obyte @_" #name "\n .qbyte 1 \n .qbyte index (@_" #name "_symbol) + 1 \n .obyte 0 \n" \
+		".const _" #name "\n .duplicable \n .require _" #name "_relocation \n .alignment 8 \n .reserve 8 \n" \
+		".code " #name "\n .duplicable \n mov rax, [rip + @_" #name "] \n jmp rax\n" \
+		);
+		
 #elif defined __arma32__
 
 	#define LIBRARY(name, file) asm ( \
