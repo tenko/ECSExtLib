@@ -54,6 +54,18 @@
 		".code " #name "\n .duplicable \n mov rax, [rip + @_" #name "] \n jmp dword @_system_call_wrapper" #parameters \
 		);
 
+    #define FUNCTIONVAR(library, name, variant) asm ( \
+		".const _" #name "\n .alignment 8 \n .duplicable \n .group _" #library "_imports \n .require _" #library "_sentinel \n .obyte @_" #name "_hint - 0x00400000 \n" \
+		".const _" #name "_hint \n .alignment 2 \n .dbyte 0 \n .duplicable \n .byte \"" #name "\", 0 \n" \
+		".code " #name "\n .duplicable \n mov rax, [rip + @_" #name "] \n jmp dword @_system_call_variant_" #variant \
+		);
+		
+    #define FUNCTIONRAW(library, name) asm ( \
+		".const _" #name "\n .alignment 8 \n .duplicable \n .group _" #library "_imports \n .require _" #library "_sentinel \n .obyte @_" #name "_hint - 0x00400000 \n" \
+		".const _" #name "_hint \n .alignment 2 \n .dbyte 0 \n .duplicable \n .byte \"" #name "\", 0 \n" \
+		".code " #name "\n .duplicable \n mov rax, [rip + @_" #name "] \n jmp rax " \
+		);
+		
 #else
 
 	#error platform not supported
