@@ -1,20 +1,18 @@
 .SUFFIXES:
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
-OB := ecsd
-PRG = .exe
-ECS := /c/EigenCompilerSuite/runtime
-
 ifdef MSYSTEM
 	PRG = .exe
 	SYS = win
-	ECS = /c/EigenCompilerSuite/
-	RTS = $(ECS)runtime/win64api.obf
+	DESTDIR = /c/EigenCompilerSuite/
+	ECS = /c/EigenCompilerSuite/runtime
+	RTS = $(ECS)/win64api.obf
 else
 	PRG = 
 	SYS = linux
-	ECS = ~/.local/lib/ecs/
-	RST = 
+	DESTDIR = ~/.local/lib/ecs/
+	ECS = ~/.local/lib/ecs/runtime
+	RTS = 
 endif
 
 .PHONY: all
@@ -36,7 +34,7 @@ build/sqlite$(SYS).obf: src/sqlite$(SYS).cpp
 	@cd build && cp ../src/$(SYS)lib.hpp .
 	@cd build && cp ../src/sqlite.cpp .
 	@cd build && cp ../src/sqlite$(SYS).cpp .
-	@cd build && $(OB) -c $(notdir $<)
+	@cd build && ecsd -c $(notdir $<)
 
 build/sdl3$(SYS).obf: src/sdl3$(SYS).cpp
 	@echo building $@:
@@ -44,7 +42,7 @@ build/sdl3$(SYS).obf: src/sdl3$(SYS).cpp
 	@cd build && cp ../src/$(SYS)lib.hpp .
 	@cd build && cp ../src/sdl3.cpp .
 	@cd build && cp ../src/sdl3$(SYS).cpp .
-	@cd build && $(OB) -c $(notdir $<)
+	@cd build && ecsd -c $(notdir $<)
 
 build/Ext.Sqlite.obf : src/Ext.Sqlite.mod
 build/sqlite$(SYS).obf :  src/$(SYS)lib.hpp src/sqlite$(SYS).cpp src/sqlite.cpp
@@ -62,7 +60,7 @@ testsqlite$(PRG): misc/testsqlite.mod extsqlite.lib
 	@echo building $@
 	@mkdir -p build
 	@cd build && cp -f ../misc/testsqlite.mod .
-	@cd build && $(OB) $(notdir $<) ../extsqlite.lib $(ECS)/runtime/std.lib $(RTS)
+	@cd build && ecsd $(notdir $<) ../extsqlite.lib $(ECS)/std.lib $(RTS)
 	@cp build/testsqlite$(PRG) testsqlite$(PRG)
 	@./testsqlite$(PRG)
 
@@ -76,11 +74,19 @@ testsdl3$(PRG): misc/testsdl3.mod extsdl3.lib
 	@echo building $@
 	@mkdir -p build
 	@cd build && cp -f ../misc/testsdl3.mod .
-	@cd build && $(OB) $(notdir $<) ../extsdl3.lib $(ECS)/runtime/std.lib $(RTS)
+	@cd build && ecsd $(notdir $<) ../extsdl3.lib $(ECS)/std.lib $(RTS)
 	@cp build/testsdl3$(PRG) testsdl3$(PRG)
 	@./testsdl3$(PRG)
+
+.PHONY: install
+install: extsqlite.lib extsdl3.lib
+	@echo Install
+	@cp -f extsqlite.lib $(DESTDIR)runtime/
+	@cp -f extsdl3.lib $(DESTDIR)runtime/
+	@cp -f build/ext.*.sym $(DESTDIR)libraries/oberon/
 	
 .PHONY: clean
 clean:
 	@echo Clean
 	@-rm -rf build
+	@-rm testsqlite$(PRG) testsdl3$(PRG)
