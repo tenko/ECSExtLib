@@ -1,6 +1,6 @@
 # ECSExtLib
 
-The **[ECS](https://ecs.openbrace.org/)** extions library wraps the following libraries:
+The **[ECS](https://ecs.openbrace.org/)** extension library wraps the following libraries:
  
  * Bindings for the [SQLite](https://www.sqlite.org/) embedded database library.
  * Bindings for the [SDL3](https://wiki.libsdl.org/SDL3/FrontPage) cross platform game/application library.
