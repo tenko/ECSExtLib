@@ -1,4 +1,33 @@
-; Windows 64bit assembler wrapper for functional calls as currently ECS does not handle float/double arguments
+; Windows 64bit assembler wrapper for functional calls as currently ECS does not handle callbacks and float/double arguments
+
+; Callback iii variant
+.code _system_callback_iii
+    push rsp
+    push rbp
+    push rbx
+    push rsi
+    push rdi
+    push r12
+    push r13
+    push r14
+    push r15
+    
+    push r8
+    push rdx
+	  call rcx ; call on 1st argument
+	  pop rdx
+	  pop r8
+	  
+	  pop r15
+	  pop r14
+	  pop r13
+	  pop r12
+	  pop rdi
+	  pop rsi
+	  pop	rbx
+	  pop	rbp
+	  pop rsp
+    ret
 
 ; Call function/procedure : (x : REAL32)[: ARG];
 .code _system_call_variant_f

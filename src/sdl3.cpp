@@ -138,6 +138,16 @@ SDL3FUNCTIONVAR (SDL_tanf, f)
 // SDL_video.h
 SDL3FUNCTION (SDL_CreateWindow, 4)
 SDL3FUNCTION (SDL_DestroyWindow, 1)
+// SDL_time.h
+SDL3FUNCTION (SDL_DateTimeToTime, 2)
+SDL3FUNCTION (SDL_GetDateTimeLocalePreferences, 2)
+SDL3FUNCTION (SDL_GetCurrentTime, 1)
+SDL3FUNCTION (SDL_GetDayOfWeek, 3)
+SDL3FUNCTION (SDL_GetDayOfYear, 3)
+SDL3FUNCTION (SDL_GetDaysInMonth, 3)
+SDL3FUNCTION (SDL_TimeToDateTime, 3)
 // SDL_timer.h
+SDL3FUNCTION (SDL_AddTimer, 3)
+SDL3FUNCTION (SDL_RemoveTimer, 1)
 SDL3FUNCTION (SDL_GetTicks, 0)
 SDL3FUNCTION (SDL_Delay, 1)

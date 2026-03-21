@@ -131,6 +131,22 @@ TYPE Surface* = RECORD-
     reserved- : SYSTEM.ADDRESS;
 END;
 TYPE PtrSurface* = POINTER TO VAR Surface;
+    
+(* SDL_time.h *)
+TYPE DateTime* = RECORD-
+    year- : INTEGER;       
+    month- : INTEGER;      
+    day- : INTEGER;        
+    hour- : INTEGER;       
+    minute- : INTEGER;     
+    second- : INTEGER;     
+    nanosecond- : INTEGER; 
+    day_of_week- : INTEGER;
+    utc_offset- : INTEGER; 
+END;
+
+(* SDL_timer.h *)
+TYPE TimerCallback* = PROCEDURE(timerID : Uint32; interval : Uint32): Uint32;
 
 (* SDL_filesystem.h *)
 CONST FOLDER_HOME*       	= 0;
@@ -557,6 +573,13 @@ CONST FLIP_HORIZONTAL* = 1;
 CONST FLIP_VERTICAL* = 2;
 CONST FLIP_HORIZONTAL_AND_VERTICAL* = 3;
 
+(* SDL_time.h *)
+CONST DATE_FORMAT_YYYYMMDD* = 0;
+CONST DATE_FORMAT_DDMMYYYY* = 1;
+CONST DATE_FORMAT_MMDDYYYY* = 2;
+CONST TIME_FORMAT_24HR* = 0;
+CONST TIME_FORMAT_12HR* = 1;
+
 (* SDL_video.h *)
 CONST WINDOW_FULLSCREEN*            = Uint64(0000000000000001H);
 CONST WINDOW_OPENGL*                = Uint64(0000000000000002H);
@@ -585,6 +608,9 @@ CONST WINDOW_METAL*                 = Uint64(0000000020000000H);
 CONST WINDOW_TRANSPARENT*           = Uint64(0000000040000000H);
 CONST WINDOW_NOT_FOCUSABLE*         = Uint64(0000000080000000H);
 
+(* SDL_timer.h *)
+VAR ^ TimerCallbackWrapper ["_system_callback_iii"]: SYSTEM.BYTE;
+    
 (* SDL_stdinc.h *)
 PROCEDURE ^ memset* ["SDL_memset"] (dst : SYSTEM.ADDRESS; c : INTEGER;  len : Uint64): SYSTEM.ADDRESS;
 PROCEDURE ^ strlen* ["SDL_strlen"] (str : POINTER TO VAR- CHAR): LENGTH;
@@ -937,7 +963,37 @@ PROCEDURE ^ sqrtf* ["SDL_sqrtf"] (x : REAL32): REAL32;
 PROCEDURE ^ tan* ["SDL_tan"] (x : REAL64): REAL64;
 PROCEDURE ^ tanf* ["SDL_tanf"] (x : REAL32): REAL32;
 
-(* SDL_timer.h *)
+(* SDL_time.h *)
+PROCEDURE ^ SDLDateTimeToTime ["SDL_DateTimeToTime"] (dt : SYSTEM.ADDRESS; ticks : POINTER TO VAR Uint64): BOOLEAN;
+PROCEDURE DateTimeToTime*(dt- : DateTime; VAR ticks: Uint64): BOOLEAN;
+BEGIN RETURN SDLDateTimeToTime(SYSTEM.ADR(dt), PTR(ticks))
+END DateTimeToTime;
+
+PROCEDURE ^ SDLGetCurrentTime ["SDL_GetCurrentTime"] (ticks : POINTER TO VAR Uint64): BOOLEAN;
+PROCEDURE GetCurrentTime*(VAR ticks: Uint64): BOOLEAN;
+BEGIN RETURN SDLGetCurrentTime(PTR(ticks))
+END GetCurrentTime;
+
+PROCEDURE ^ SDLGetDateTimeLocalePreferences ["SDL_GetDateTimeLocalePreferences"] (dateFormat, timeFormat : POINTER TO VAR INTEGER): BOOLEAN;
+PROCEDURE GetDateTimeLocalePreferences*(VAR dateFormat, timeFormat: INTEGER): BOOLEAN;
+BEGIN RETURN SDLGetDateTimeLocalePreferences(PTR(dateFormat), PTR(timeFormat))
+END GetDateTimeLocalePreferences;
+
+PROCEDURE ^ GetDayOfWeek* ["SDL_GetDayOfWeek"] (year: INTEGER; month: INTEGER; day: INTEGER): INTEGER;
+PROCEDURE ^ GetDayOfYear* ["SDL_GetDayOfYear"] (year: INTEGER; month: INTEGER; day: INTEGER): INTEGER;
+PROCEDURE ^ GetDaysInMonth* ["SDL_GetDaysInMonth"] (year: INTEGER; month: INTEGER): INTEGER;
+
+PROCEDURE ^ SDLTimeToDateTime ["SDL_TimeToDateTime"] (ticks: Uint64; dt: SYSTEM.ADDRESS; localTime : BOOLEAN): BOOLEAN;
+PROCEDURE TimeToDateTime*(ticks: Uint64; VAR dt : DateTime; localTime : BOOLEAN ): BOOLEAN;
+BEGIN RETURN SDLTimeToDateTime(ticks, SYSTEM.ADR(dt), localTime)
+END TimeToDateTime;
+
+(* SDL_timer.h *) 
+PROCEDURE ^ SDLAddTimer ["SDL_AddTimer"] (interval : Uint32; callback : SYSTEM.ADDRESS; userdata : TimerCallback): Uint32;
+PROCEDURE AddTimer*(interval : Uint32; callback : TimerCallback): Uint32;
+BEGIN RETURN SDLAddTimer(interval, SYSTEM.ADR(TimerCallbackWrapper), callback)
+END AddTimer;
+PROCEDURE ^ RemoveTimer* ["SDL_RemoveTimer"] (timerID : Uint32): BOOLEAN;
 PROCEDURE ^ GetTicks* ["SDL_GetTicks"] (): Uint64;
 PROCEDURE ^ Delay* ["SDL_Delay"] (ms : Uint32);
 
