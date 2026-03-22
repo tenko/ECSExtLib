@@ -3,12 +3,14 @@ MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
 ifdef MSYSTEM
 	PRG = .exe
+	EXEC = winpty
 	SYS = win
 	DESTDIR = /c/EigenCompilerSuite/
 	ECS = /c/EigenCompilerSuite/runtime
 	RTS = $(ECS)/win64api.obf
 else
-	PRG = 
+	PRG =
+	EXEC = 
 	SYS = linux
 	DESTDIR = ~/.local/lib/ecs/
 	ECS = ~/.local/lib/ecs/runtime
@@ -76,7 +78,7 @@ testsdl3$(PRG): misc/testsdl3.mod extsdl3.lib
 	@cd build && cp -f ../misc/testsdl3.mod .
 	@cd build && ecsd $(notdir $<) ../extsdl3.lib $(ECS)/std.lib $(RTS)
 	@cp build/testsdl3$(PRG) testsdl3$(PRG)
-	@./testsdl3$(PRG)
+	@$(EXEC) ./testsdl3$(PRG)
 
 .PHONY: install
 install: extsqlite.lib extsdl3.lib
