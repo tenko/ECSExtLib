@@ -1395,6 +1395,22 @@ BEGIN
     SDL3.Quit;
 END Example18;
 
+PROCEDURE TestPath;
+VAR
+    s : SDL3.STRING;
+BEGIN
+    TRACE(SDL3.GetBasePath(s));
+    IF s # NIL THEN TRACE(s^) END;
+    TRACE(SDL3.GetCurrentDirectory(s));
+    IF s # NIL THEN TRACE(s^) END;
+    TRACE(SDL3.GetPrefPath(s, "tenko", "app1"));
+    IF s # NIL THEN TRACE(s^) END;
+    TRACE(SDL3.GetUserFolder(s, SDL3.FOLDER_DOCUMENTS));
+    IF s # NIL THEN TRACE(s^) END;
+    DISPOSE(s);
+END TestPath;
+
 BEGIN
     Example18; (* 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 18 *)
+    (* TestPath; *)
 END Test.

@@ -89,6 +89,7 @@ SDL3FUNCTION (SDL_FillSurfaceRect, 3)
 SDL3FUNCTION (SDL_DestroySurface, 1)
 // SDL_stdinc.h
 SDL3FUNCTION (SDL_strlen, 1)
+SDL3FUNCTION (SDL_memcpy, 3)
 SDL3FUNCTION (SDL_memset, 3)
 SDL3FUNCTION (SDL_srand, 1)
 SDL3FUNCTION (SDL_rand, 1)

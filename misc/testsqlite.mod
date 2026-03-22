@@ -20,18 +20,19 @@ CONST
 VAR
     db : Sqlite.Db;
     stmt : Sqlite.Stmt;
-    s : ARRAY 64 OF CHAR;
+    s : Sqlite.STRING;
     
     PROCEDURE Error();
-    VAR msg : ARRAY 256 OF CHAR;
+    VAR msg : Sqlite.STRING;
     BEGIN
         IF db.ErrorMessage(msg) THEN
-            OSStream.StdErr.WriteString(msg); OSStream.StdErr.WriteNL;
+            OSStream.StdErr.WriteString(msg^); OSStream.StdErr.WriteNL;
         ELSE
             OSStream.StdErr.WriteString("unknown error"); OSStream.StdErr.WriteNL;
         END;
         IGNORE(stmt.Finalize());
         db.Close();
+        IF msg # NIL THEN DISPOSE(msg) END;
     END Error;
 BEGIN
     IF ~db.Open("", 0) THEN TRACE("Failed to open database"); RETURN END;
@@ -43,11 +44,12 @@ BEGIN
     WHILE stmt.Step() # Sqlite.DONE DO
         OSStream.StdOut.FormatInteger(stmt.ColumnInt(0), 2, {});
         IGNORE(stmt.ColumnText(s, 1));
-        OSStream.StdOut.FormatString(s, 12, 0, Const.Right);
+        OSStream.StdOut.FormatString(s^, 12, 0, Const.Right);
         OSStream.StdOut.FormatInteger(stmt.ColumnInt(2), 8, {});
         OSStream.StdOut.WriteNL;
     END;
     db.Close();
+    IF s # NIL THEN DISPOSE(s) END;
 END Test;
     
 BEGIN

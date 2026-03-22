@@ -3,6 +3,8 @@ MODULE SDL3 IN Ext;
 IMPORT SYSTEM;
 
 TYPE PCHAR* = POINTER TO VAR- CHAR;
+TYPE STRING* = POINTER TO ARRAY OF CHAR;
+
 TYPE Sint32* = SIGNED32;
 TYPE Sint64* = SIGNED64;
 TYPE Uint8* = UNSIGNED8;
@@ -612,6 +614,7 @@ CONST WINDOW_NOT_FOCUSABLE*         = Uint64(0000000080000000H);
 VAR ^ TimerCallbackWrapper ["_system_callback_iii"]: SYSTEM.BYTE;
     
 (* SDL_stdinc.h *)
+PROCEDURE ^ memcpy* ["SDL_memcpy"] (dst : SYSTEM.ADDRESS; src : SYSTEM.ADDRESS; len : Uint64): SYSTEM.ADDRESS;
 PROCEDURE ^ memset* ["SDL_memset"] (dst : SYSTEM.ADDRESS; c : INTEGER;  len : Uint64): SYSTEM.ADDRESS;
 PROCEDURE ^ strlen* ["SDL_strlen"] (str : POINTER TO VAR- CHAR): LENGTH;
 
@@ -626,16 +629,92 @@ PROCEDURE CreateDirectory*(path-: ARRAY OF CHAR): BOOLEAN;
 BEGIN RETURN SDLCreateDirectory(PTR(path[0]))
 END CreateDirectory;
 
-PROCEDURE ^ GetBasePath* ["SDL_GetBasePath"] (): PCHAR;
-PROCEDURE ^ GetCurrentDirectory* ["SDL_GetCurrentDirectory"] (): PCHAR;
+PROCEDURE ^ SDLGetBasePath ["SDL_GetBasePath"] (): PCHAR;
+PROCEDURE GetBasePath*(VAR path : STRING): BOOLEAN;
+VAR
+    x : PCHAR;
+    len : LENGTH;
+BEGIN
+    x := SDLGetBasePath();
+    len := 0;
+    IF x # NIL THEN len := strlen(x) END;
+    IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
+    IF path = NIL THEN 
+        NEW(path, len + 1)
+    ELSIF LEN(path^) < (len + 1) THEN
+        DISPOSE(path);
+        NEW(path, len + 1)
+    END;
+    IGNORE(memcpy(SYSTEM.ADR(path^[0]), SYSTEM.VAL(SYSTEM.ADDRESS, x), len + 1));
+    RETURN TRUE
+END GetBasePath;
+
+
+PROCEDURE ^ SDLGetCurrentDirectory ["SDL_GetCurrentDirectory"] (): PCHAR;
+PROCEDURE GetCurrentDirectory*(VAR path : STRING): BOOLEAN;
+VAR
+    x : PCHAR;
+    len : LENGTH;
+BEGIN
+    x := SDLGetCurrentDirectory();
+    len := 0;
+    IF x # NIL THEN len := strlen(x) END;
+    IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
+    IF path = NIL THEN 
+        NEW(path, len + 1)
+    ELSIF LEN(path^) < (len + 1) THEN
+        DISPOSE(path);
+        NEW(path, len + 1)
+    END;
+    IGNORE(memcpy(SYSTEM.ADR(path^[0]), SYSTEM.VAL(SYSTEM.ADDRESS, x), len + 1));
+    RETURN TRUE
+END GetCurrentDirectory;
 
 PROCEDURE ^ SDLGetPathInfo ["SDL_GetPathInfo"] (path: PCHAR; info : POINTER TO VAR- PathInfo): BOOLEAN;
 PROCEDURE GetPathInfo*(path-: ARRAY OF CHAR; VAR info : PathInfo): BOOLEAN;
 BEGIN RETURN SDLGetPathInfo(PTR(path[0]), PTR(info))
 END GetPathInfo;
 
-PROCEDURE ^ GetPrefPath* ["SDL_GetPrefPath"] (org: PCHAR; app : PCHAR): PCHAR;
-PROCEDURE ^ GetUserFolder* ["SDL_GetUserFolder"] (folder : INTEGER): PCHAR;
+PROCEDURE ^ SDLGetPrefPath ["SDL_GetPrefPath"] (org: PCHAR; app : PCHAR): PCHAR;
+PROCEDURE GetPrefPath*(VAR path : STRING; org-: ARRAY OF CHAR; app-: ARRAY OF CHAR): BOOLEAN;
+VAR
+    x : PCHAR;
+    len : LENGTH;
+BEGIN
+    x := SDLGetPrefPath(PTR(org[0]), PTR(app[0]));
+    len := 0;
+    IF x # NIL THEN len := strlen(x) END;
+    IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
+    IF path = NIL THEN 
+        NEW(path, len + 1)
+    ELSIF LEN(path^) < (len + 1) THEN
+        DISPOSE(path);
+        NEW(path, len + 1)
+    END;
+    IGNORE(memcpy(SYSTEM.ADR(path^[0]), SYSTEM.VAL(SYSTEM.ADDRESS, x), len + 1));
+    RETURN TRUE
+END GetPrefPath;
+
+
+PROCEDURE ^ SDLGetUserFolder ["SDL_GetUserFolder"] (folder : INTEGER): PCHAR;
+PROCEDURE GetUserFolder*(VAR path : STRING; folder : INTEGER): BOOLEAN;
+VAR
+    x : PCHAR;
+    len : LENGTH;
+BEGIN
+    x := SDLGetUserFolder(folder);
+    len := 0;
+    IF x # NIL THEN len := strlen(x) END;
+    IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
+    IF path = NIL THEN 
+        NEW(path, len + 1)
+    ELSIF LEN(path^) < (len + 1) THEN
+        DISPOSE(path);
+        NEW(path, len + 1)
+    END;
+    IGNORE(memcpy(SYSTEM.ADR(path^[0]), SYSTEM.VAL(SYSTEM.ADDRESS, x), len + 1));
+    RETURN TRUE
+END GetUserFolder;
 
 PROCEDURE ^ SDLRemovePath ["SDL_RemovePath"] (path: PCHAR): BOOLEAN;
 PROCEDURE RemovePath*(path-: ARRAY OF CHAR): BOOLEAN;

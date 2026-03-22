@@ -26,6 +26,8 @@ TYPE
         stmt : ADDRESS;
     END;
     
+    STRING* = POINTER TO ARRAY OF CHAR;
+    
 PROCEDURE ^ libversion_number ["sqlite3_libversion_number"] (): INTEGER;
 PROCEDURE ^ errmsg ["sqlite3_errmsg"] (db : ADDRESS): ADDRESS;
 PROCEDURE ^ open_v2 ["sqlite3_open_v2"] (filename: ADDRESS; db : ADDRESS; flags : INTEGER; zVfs : ADDRESS): INTEGER;
@@ -72,48 +74,36 @@ BEGIN
 END Open;
 
 (**
-Return length of last error message.
-Return 0 on failure.
-*)
-PROCEDURE (VAR this : Db) ErrorMessageLength*(): LENGTH;
-VAR
-    adr : ADDRESS;
-    ch : CHAR;
-    i : LENGTH;
-BEGIN
-    adr := errmsg(this.db);
-    IF adr = 0 THEN RETURN 0 END;
-    i := 0;
-    LOOP
-        SYSTEM.GET(adr, ch);
-        IF ch = 00X THEN EXIT END;
-        INC(i); INC(adr);
-    END;
-    RETURN i;
-END ErrorMessageLength;
-
-(**
 Set `str` to last error message.
 Return `TRUE` on success.
 *)
-PROCEDURE (VAR this : Db) ErrorMessage*(VAR str : ARRAY OF CHAR): BOOLEAN;
+PROCEDURE (VAR this : Db) ErrorMessage*(VAR str : STRING): BOOLEAN;
 VAR
     adr : ADDRESS;
     ch : CHAR;
-    i : LENGTH;
+    len : LENGTH;
 BEGIN
     adr := errmsg(this.db);
     IF adr = 0 THEN RETURN FALSE END;
-    FOR i := 0 TO LEN(str) - 1 DO
-        SYSTEM.GET(adr, ch);
-        IF ch = 00X THEN
-            str[i] := 00X;
-            RETURN TRUE;
-        END;
-        str[i] := ch;
-        INC(adr);
+    len := 0;
+    REPEAT
+        SYSTEM.GET(adr + len, ch);
+        INC(len);
+    UNTIL ch = 00X;
+    IF len = 1 THEN RETURN FALSE END;
+    IF str = NIL THEN 
+        NEW(str, len)
+    ELSIF LEN(str^) < len THEN
+        DISPOSE(str);
+        NEW(str, len)
     END;
-    RETURN FALSE;
+    len := 0;
+    REPEAT
+        SYSTEM.GET(adr + len, ch);
+        str^[len] := ch;
+        INC(len);
+    UNTIL ch = 00X;
+    RETURN TRUE;
 END ErrorMessage;
 
 (**
@@ -280,48 +270,36 @@ BEGIN RETURN column_double(this.stmt, col);
 END ColumnReal;
 
 (**
-Return length of `TEXT` column.
-Return 0 on failure.
-*)
-PROCEDURE (VAR this : Stmt) ColumnTextLength*(col : INTEGER): LENGTH;
-VAR
-    adr : ADDRESS;
-    ch : CHAR;
-    i : LENGTH;
-BEGIN
-    adr := column_text(this.stmt, col);
-    IF adr = 0 THEN RETURN 0 END;
-    i := 0;
-    LOOP
-        SYSTEM.GET(adr, ch);
-        IF ch = 00X THEN EXIT END;
-        INC(i); INC(adr);
-    END;
-    RETURN i;
-END ColumnTextLength;
-
-(**
 Set `str` to `TEXT` in column col.
 Return `TRUE` on success.
 *)
-PROCEDURE (VAR this : Stmt) ColumnText*(VAR str : ARRAY OF CHAR; col : INTEGER): BOOLEAN;
+PROCEDURE (VAR this : Stmt) ColumnText*(VAR str : STRING; col : INTEGER): BOOLEAN;
 VAR
     adr : ADDRESS;
     ch : CHAR;
-    i : LENGTH;
+    len : LENGTH;
 BEGIN
     adr := column_text(this.stmt, col);
     IF adr = 0 THEN RETURN FALSE END;
-    FOR i := 0 TO LEN(str) - 1 DO
-        SYSTEM.GET(adr, ch);
-        IF ch = 00X THEN
-            str[i] := 00X;
-            RETURN TRUE;
-        END;
-        str[i] := ch;
-        INC(adr);
+    len := 0;
+    REPEAT
+        SYSTEM.GET(adr + len, ch);
+        INC(len);
+    UNTIL ch = 00X;
+    IF len = 1 THEN RETURN FALSE END;
+    IF str = NIL THEN 
+        NEW(str, len)
+    ELSIF LEN(str^) < len THEN
+        DISPOSE(str);
+        NEW(str, len)
     END;
-    RETURN FALSE;
+    len := 0;
+    REPEAT
+        SYSTEM.GET(adr + len, ch);
+        str^[len] := ch;
+        INC(len);
+    UNTIL ch = 00X;
+    RETURN TRUE;
 END ColumnText;
 
 END Sqlite.
