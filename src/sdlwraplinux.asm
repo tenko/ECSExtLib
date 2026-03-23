@@ -60,6 +60,18 @@
     jmp rbx
 
 
+; Call function/procedure : (arg1: LENGTH; arg2 : LENGTH; x : REAL32)[: ARG];
+.code _system_call_variant_iif
+    pop rbx
+    mov rdi, [rsp + 0]
+    mov rsi, [rsp + 8]
+    movss   xmm0, dword [rsp + 16]
+    mov r12, rsp
+    and rsp, ~1111b
+    call    rax
+    mov rsp, r12
+    jmp rbx
+    
 ; Call function/procedure : (x : REAL64)[: ARG];
 .code _system_call_variant_d
     pop rbx

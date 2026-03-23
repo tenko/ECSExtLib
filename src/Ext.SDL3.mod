@@ -303,6 +303,14 @@ CONST PIXELFORMAT_P010*             = 30313050H;
 CONST PIXELFORMAT_EXTERNAL_OES*     = 2053454FH;
 CONST PIXELFORMAT_MJPG*             = 47504A4DH;
 
+(* SDL_properties.h *)
+CONST PROPERTY_TYPE_INVALID*    = 0;
+CONST PROPERTY_TYPE_POINTER*    = 1;
+CONST PROPERTY_TYPE_STRING*     = 2;
+CONST PROPERTY_TYPE_NUMBER*     = 3;
+CONST PROPERTY_TYPE_FLOAT*      = 4;
+CONST PROPERTY_TYPE_BOOLEAN*    = 5;
+ 
 (* SDL_render.h *)
 CONST LOGICAL_PRESENTATION_DISABLED*        = 0;
 CONST LOGICAL_PRESENTATION_STRETCH*         = 1;
@@ -892,6 +900,57 @@ PROCEDURE ^ GetProcessInput* ["SDL_GetProcessInput"] (process : POINTER TO VAR P
 PROCEDURE ^ GetProcessOutput* ["SDL_GetProcessOutput"] (process : POINTER TO VAR Process): PtrIOStream;
 PROCEDURE ^ KillProcess* ["SDL_KillProcess"] (process : POINTER TO VAR Process): BOOLEAN;
 PROCEDURE ^ WaitProcess* ["SDL_WaitProcess"] (process : POINTER TO VAR Process; block : BOOLEAN; exitcode : POINTER TO VAR INTEGER): BOOLEAN;
+
+(* DL_properties.h *)
+PROCEDURE ^ CreateProperties* ["SDL_CreateProperties"] (): Uint32;
+PROCEDURE ^ DestroyProperties* ["SDL_DestroyProperties"] (props : Uint32);
+
+PROCEDURE ^ SDLGetBooleanProperty ["SDL_GetBooleanProperty"] (props : Uint32; name: POINTER TO VAR- CHAR; default_value: BOOLEAN): BOOLEAN;
+PROCEDURE GetBooleanProperty*(props : Uint32; name-: ARRAY OF CHAR; default_value: BOOLEAN): BOOLEAN;
+BEGIN RETURN SDLGetBooleanProperty(props, PTR(name[0]), default_value)
+END GetBooleanProperty;
+
+PROCEDURE ^ SDLGetFloatProperty ["SDL_GetFloatProperty"] (props : Uint32; name: POINTER TO VAR- CHAR; default_value: REAL32): REAL32;
+PROCEDURE GetFloatProperty*(props : Uint32; name-: ARRAY OF CHAR; default_value: REAL32): REAL32;
+BEGIN RETURN SDLGetFloatProperty(props, PTR(name[0]), default_value)
+END GetFloatProperty;
+
+PROCEDURE ^ GetGlobalProperties* ["SDL_GetGlobalProperties"] (): Uint32;
+
+PROCEDURE ^ SDLGetNumberProperty ["SDL_GetNumberProperty"] (props : Uint32; name: POINTER TO VAR- CHAR; default_value: Sint64): Sint64;
+PROCEDURE GetNumberProperty*(props : Uint32; name-: ARRAY OF CHAR; default_value: Sint64): Sint64;
+BEGIN RETURN SDLGetNumberProperty(props, PTR(name[0]), default_value)
+END GetNumberProperty;
+
+PROCEDURE ^ SDLGetPropertyType ["SDL_GetPropertyType"] (props : Uint32; name: POINTER TO VAR- CHAR): INTEGER;
+PROCEDURE GetPropertyType*(props : Uint32; name-: ARRAY OF CHAR): INTEGER;
+BEGIN RETURN SDLGetPropertyType(props, PTR(name[0]))
+END GetPropertyType;
+
+PROCEDURE ^ SDLHasProperty ["SDL_HasProperty"] (props : Uint32; name: POINTER TO VAR- CHAR): BOOLEAN;
+PROCEDURE HasProperty*(props : Uint32; name-: ARRAY OF CHAR): BOOLEAN;
+BEGIN RETURN SDLHasProperty(props, PTR(name[0]))
+END HasProperty;
+
+PROCEDURE ^ SDLSetBooleanProperty ["SDL_SetBooleanProperty"] (props : Uint32; name: POINTER TO VAR- CHAR; value: BOOLEAN): BOOLEAN;
+PROCEDURE SetBooleanProperty*(props : Uint32; name-: ARRAY OF CHAR; value: BOOLEAN): BOOLEAN;
+BEGIN RETURN SDLSetBooleanProperty(props, PTR(name[0]), value)
+END SetBooleanProperty;
+
+PROCEDURE ^ SDLSetFloatProperty ["SDL_SetFloatProperty"] (props : Uint32; name: POINTER TO VAR- CHAR; value: REAL32): BOOLEAN;
+PROCEDURE SetFloatProperty*(props : Uint32; name-: ARRAY OF CHAR; value: REAL32): BOOLEAN;
+BEGIN RETURN SDLSetFloatProperty(props, PTR(name[0]), value)
+END SetFloatProperty;
+
+PROCEDURE ^ SDLSetNumberProperty ["SDL_SetNumberProperty"] (props : Uint32; name: POINTER TO VAR- CHAR; value: Sint64): BOOLEAN;
+PROCEDURE SetNumberProperty*(props : Uint32; name-: ARRAY OF CHAR; value: Sint64): BOOLEAN;
+BEGIN RETURN SDLSetNumberProperty(props, PTR(name[0]), value)
+END SetNumberProperty;
+
+PROCEDURE ^ SDLSetStringProperty ["SDL_SetStringProperty"] (props : Uint32; name: POINTER TO VAR- CHAR; value: POINTER TO VAR- CHAR): BOOLEAN;
+PROCEDURE SetStringProperty*(props : Uint32; name-: ARRAY OF CHAR; value-: ARRAY OF CHAR): BOOLEAN;
+BEGIN RETURN SDLSetStringProperty(props, PTR(name[0]), PTR(value[0]))
+END SetStringProperty;
 
 (* SDL_render.h *)
 PROCEDURE ^ DestroyRenderer* ["SDL_DestroyRenderer"] (renderer : POINTER TO VAR Renderer);

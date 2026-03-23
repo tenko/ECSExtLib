@@ -52,7 +52,20 @@
     call rax
     mov rsp, rdi
     jmp rbx
-        
+
+; Call function/procedure : (arg1: LENGTH; arg2 : LENGTH; x : REAL32)[: ARG];
+.code _system_call_variant_iif
+    pop rbx
+    mov rdi, rsp
+    and rsp, ~1111b
+    mov rcx, [rdi + 0]
+    mov rdx, [rdi + 8]
+    movss   xmm2, dword [rdi + 16]
+    sub rsp, 32
+    call rax
+    mov rsp, rdi
+    jmp rbx
+     
 ; Call function/procedure : (x : REAL32; y : REAL32)[: ARG];
 .code _system_call_variant_ff
     pop rbx
