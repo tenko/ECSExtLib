@@ -1,19 +1,18 @@
 .SUFFIXES:
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
+# Installation prefix
+PREFIX = /usr/local
+
 ifdef MSYSTEM
 	PRG = .exe
 	EXEC = winpty
 	SYS = win
-	DESTDIR = /c/EigenCompilerSuite/
-	ECS = /c/EigenCompilerSuite/runtime
-	RTS = $(ECS)/win64api.obf
+	RTS = -r win64api.obf
 else
 	PRG =
 	EXEC = 
 	SYS = linux
-	DESTDIR = ~/.local/lib/ecs/
-	ECS = ~/.local/lib/ecs/runtime
 	RTS = 
 endif
 
@@ -73,7 +72,7 @@ testsqlite$(PRG): misc/testsqlite.mod extsqlite.lib
 	@echo building $@
 	@mkdir -p build
 	@cd build && cp -f ../misc/testsqlite.mod .
-	@cd build && ecsd $(notdir $<) ../extsqlite.lib $(ECS)/std.lib $(RTS)
+	@cd build && ecsd -r std.lib $(RTS) $(notdir $<) ../extsqlite.lib
 	@cp build/testsqlite$(PRG) testsqlite$(PRG)
 	@./testsqlite$(PRG)
 
@@ -87,7 +86,7 @@ testsdl3$(PRG): misc/testsdl3.mod extsdl3.lib
 	@echo building $@
 	@mkdir -p build
 	@cd build && cp -f ../misc/testsdl3.mod .
-	@cd build && ecsd $(notdir $<) ../extsdl3.lib $(ECS)/std.lib $(RTS)
+	@cd build && ecsd -r std.lib $(RTS) $(notdir $<) ../extsdl3.lib
 	@cp build/testsdl3$(PRG) testsdl3$(PRG)
 	@$(EXEC) ./testsdl3$(PRG)
 
@@ -101,16 +100,17 @@ testsdl3ttf$(PRG): misc/testsdl3ttf.mod extsdl3ttf.lib
 	@echo building $@
 	@mkdir -p build
 	@cd build && cp -f ../misc/testsdl3ttf.mod .
-	@cd build && ecsd $(notdir $<) ../extsdl3ttf.lib $(ECS)/std.lib $(RTS)
+	@cd build && ecsd -r std.lib $(RTS) $(notdir $<) ../extsdl3ttf.lib ../extsdl3.lib
 	@cp build/testsdl3ttf$(PRG) testsdl3ttf$(PRG)
 	@$(EXEC) ./testsdl3ttf$(PRG)
 	
 .PHONY: install
 install: extsqlite.lib extsdl3.lib
 	@echo Install
-	@cp -f extsqlite.lib $(DESTDIR)runtime/
-	@cp -f extsdl3.lib $(DESTDIR)runtime/
-	@cp -f build/ext.*.sym $(DESTDIR)libraries/oberon/
+	@cp -f extsqlite.lib $(PREFIX)/lib/ecs/runtime/
+	@cp -f extsdl3.lib $(PREFIX)/lib/ecs/runtime/
+	@cp -f extsdl3ttf.lib $(PREFIX)/lib/ecs/runtime/
+	@cp -f build/ext.*.sym $(PREFIX)/lib/ecs/libraries/oberon/
 	
 .PHONY: clean
 clean:

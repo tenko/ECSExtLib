@@ -2,6 +2,7 @@
 
 ; Callback iii variant
 .code _system_callback_iii
+  .duplicable
     push rsp
     push rbp
     push rbx
@@ -31,6 +32,7 @@
 
 ; Call function/procedure : (x : REAL32)[: ARG];
 .code _system_call_variant_f
+  .duplicable
     pop rbx
     mov rdi, rsp
     and rsp, ~1111b
@@ -42,6 +44,7 @@
 
 ; Call function/procedure : (arg : LENGTH; x : REAL32)[: ARG];
 .code _system_call_variant_if
+  .duplicable
     pop rbx
     mov rdi, rsp
     and rsp, ~1111b
@@ -54,6 +57,7 @@
     
 ; Call function/procedure : (arg : LENGTH; x : REAL32; y : REAL32)[: ARG];
 .code _system_call_variant_iff
+  .duplicable
     pop rbx
     mov rdi, rsp
     and rsp, ~1111b
@@ -67,6 +71,7 @@
 
 ; Call function/procedure : (arg1: LENGTH; arg2 : LENGTH; x : REAL32)[: ARG];
 .code _system_call_variant_iif
+  .duplicable
     pop rbx
     mov rdi, rsp
     and rsp, ~1111b
@@ -80,6 +85,7 @@
      
 ; Call function/procedure : (x : REAL32; y : REAL32)[: ARG];
 .code _system_call_variant_ff
+  .duplicable
     pop rbx
     mov rdi, rsp
     and rsp, ~1111b
@@ -92,6 +98,7 @@
         
 ; Call function/procedure : (x : REAL64)[: ARG];
 .code _system_call_variant_d
+  .duplicable
     pop rbx
     mov rdi, rsp
     and rsp, ~1111b
@@ -103,6 +110,7 @@
 
 ; Call function/procedure : (x : REAL64; y : REAL64)[: ARG];
 .code _system_call_variant_dd
+  .duplicable
     pop rbx
     mov rdi, rsp
     and rsp, ~1111b

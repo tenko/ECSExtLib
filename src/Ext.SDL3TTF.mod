@@ -5,7 +5,18 @@ IN Ext IMPORT SDL3;
 
 TYPE Font* = RECORD- END;
 TYPE PtrFont* = POINTER TO VAR Font;
-    
+
+TYPE TextEngine* = RECORD- END;
+TYPE PtrTextEngine* = POINTER TO VAR TextEngine;
+
+TYPE Text* = RECORD-
+    text-: POINTER TO VAR- CHAR;
+    num_lines-: INTEGER;
+    refcount-: INTEGER;
+    internal-: SYSTEM.ADDRESS;
+END;
+TYPE PtrText* = POINTER TO VAR Text;
+
 CONST STYLE_NORMAL*        = 0;
 CONST STYLE_BOLD*          = 1;
 CONST STYLE_ITALIC*        = 2;
@@ -54,8 +65,27 @@ PROCEDURE ^ TTFOpenFont ["TTF_OpenFont"] (file: POINTER TO VAR- CHAR; ptsize : R
 PROCEDURE OpenFont*(file-: ARRAY OF CHAR; ptsize : REAL32): POINTER TO VAR Font;
 BEGIN RETURN TTFOpenFont(PTR(file[0]), ptsize)
 END OpenFont;
-
 PROCEDURE ^ CloseFont* ["TTF_CloseFont"] (font: POINTER TO VAR Font);
+
+PROCEDURE ^ CreateRendererTextEngine* ["TTF_CreateRendererTextEngine"] (renderer : POINTER TO VAR SDL3.Renderer): POINTER TO VAR TextEngine;
+PROCEDURE ^ DestroyRendererTextEngine* ["TTF_DestroyRendererTextEngine"] (engine : POINTER TO VAR TextEngine);
+
+PROCEDURE ^ TTFCreateText ["TTF_CreateText"] (engine : POINTER TO VAR TextEngine; font: POINTER TO VAR Font; text: POINTER TO VAR- CHAR; length : LENGTH) : POINTER TO VAR Text;
+PROCEDURE CreateText*(engine : POINTER TO VAR TextEngine; font: POINTER TO VAR Font; text-: ARRAY OF CHAR; length : LENGTH): POINTER TO VAR Text;
+BEGIN RETURN TTFCreateText(engine, font, PTR(text[0]), length)
+END CreateText;
+
+PROCEDURE ^ TTFSetTextColor ["TTF_SetTextColor"] (text : POINTER TO VAR Text; r, g, b, a : SDL3.Uint8) : BOOLEAN;
+PROCEDURE SetTextColor*(text : POINTER TO VAR Text; r, g, b, a: INTEGER): BOOLEAN;
+BEGIN RETURN TTFSetTextColor(text, SDL3.Uint8(r), SDL3.Uint8(g), SDL3.Uint8(b), SDL3.Uint8(a))
+END SetTextColor;
+
+PROCEDURE ^ TTFGetTextSize ["TTF_GetTextSize"] (text : POINTER TO VAR Text; w, h: POINTER TO VAR INTEGER): BOOLEAN;
+PROCEDURE GetTextSize*(text : POINTER TO VAR Text; VAR w, h: INTEGER): BOOLEAN;
+BEGIN RETURN TTFGetTextSize(text, PTR(w), PTR(h))
+END GetTextSize;
+
+PROCEDURE ^ DrawRendererText* ["TTF_DrawRendererText"] (text : POINTER TO VAR Text; x, y : REAL32) : BOOLEAN;
 
 PROCEDURE ^ TTFRenderText_Blended ["TTF_RenderText_Blended"] (font: POINTER TO VAR Font; text: POINTER TO VAR- CHAR; length : LENGTH; color : POINTER TO VAR- SDL3.Color) : POINTER TO VAR SDL3.Surface;
 PROCEDURE RenderText_Blended*(font: POINTER TO VAR Font; text-: ARRAY OF CHAR; length : LENGTH; color-: SDL3.Color): POINTER TO VAR SDL3.Surface;

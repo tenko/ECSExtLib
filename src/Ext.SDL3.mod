@@ -982,10 +982,21 @@ PROCEDURE LockTextureToSurface*(texture : POINTER TO VAR Texture; rect : POINTER
 BEGIN RETURN SDLLockTextureToSurface(texture, rect, SYSTEM.ADR(surface))
 END LockTextureToSurface;
 
+PROCEDURE ^ SDLGetTextureSize ["SDL_GetTextureSize"] (texture : POINTER TO VAR Texture; w, h: POINTER TO VAR REAL32): BOOLEAN;
+PROCEDURE GetTextureSize*(texture : POINTER TO VAR Texture; VAR w, h: REAL32): BOOLEAN;
+BEGIN RETURN SDLGetTextureSize(texture, PTR(w), PTR(h))
+END GetTextureSize;
+
 PROCEDURE ^ SetTextureColorModFloat* ["SDL_SetTextureColorModFloat_wrap"] (texture : POINTER TO VAR Texture; r : REAL32; g : REAL32; b : REAL32): BOOLEAN;
 PROCEDURE ^ UnlockTexture* ["SDL_UnlockTexture"] (texture : POINTER TO VAR Texture);
 PROCEDURE ^ DestroyTexture* ["SDL_DestroyTexture"] (texture : POINTER TO VAR Texture);
 PROCEDURE ^ SetRenderLogicalPresentation* ["SDL_SetRenderLogicalPresentation"] (renderer : POINTER TO VAR Renderer; w, h : INTEGER; mode: INTEGER): BOOLEAN;
+
+PROCEDURE ^ SDLGetRenderOutputSize ["SDL_GetRenderOutputSize"] (renderer : POINTER TO VAR Renderer; w, h: POINTER TO VAR INTEGER): BOOLEAN;
+PROCEDURE GetRenderOutputSize*(renderer : POINTER TO VAR Renderer; VAR w, h: INTEGER): BOOLEAN;
+BEGIN RETURN SDLGetRenderOutputSize(renderer, PTR(w), PTR(h))
+END GetRenderOutputSize;
+
 PROCEDURE ^ SetRenderViewport* ["SDL_SetRenderViewport"] (renderer : POINTER TO VAR Renderer; rect : POINTER TO VAR Rect): BOOLEAN;
 PROCEDURE ^ SetRenderClipRect* ["SDL_SetRenderClipRect"] (renderer : POINTER TO VAR Renderer; rect : POINTER TO VAR Rect): BOOLEAN;
 PROCEDURE ^ SetRenderScale* ["SDL_SetRenderScale"] (renderer : POINTER TO VAR Renderer; scaleX: REAL32; scaleY: REAL32): BOOLEAN;
