@@ -31,7 +31,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -88,7 +88,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -178,7 +178,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -259,7 +259,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -337,7 +337,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -469,7 +469,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -561,7 +561,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -682,7 +682,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -780,7 +780,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -886,7 +886,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -1034,7 +1034,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -1157,7 +1157,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -1278,7 +1278,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -1362,7 +1362,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -1410,7 +1410,68 @@ BEGIN
     DISPOSE(s);
 END TestPath;
 
+PROCEDURE EventTest();
+VAR
+    window : SDL3.PtrWindow;
+    renderer : SDL3.PtrRenderer;
+    event : SDL3.Event;
+    keyev : SDL3.PtrKeyboardEvent;
+    mbuttonev : SDL3.PtrMouseButtonEvent;
+    mmoveev : SDL3.PtrMouseMotionEvent;
+    mwheelev : SDL3.PtrMouseWheelEvent;
+    quit : BOOLEAN;
 BEGIN
-    Example18; (* 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 18 *)
+    IF ~SDL3.Init(SDL3.INIT_VIDEO) THEN
+        SDL3.LogStr("Couldn't initialize SDL:");
+        SDL3.Log(SDL3.GetError());
+        SDL3.Quit;
+        RETURN
+    END;
+    IF ~SDL3.CreateWindowAndRenderer("event testing", 640, 480, SDL3.WINDOW_RESIZABLE, window, renderer) THEN
+        SDL3.LogStr("Couldn't create window/renderer:");
+        SDL3.Log(SDL3.GetError());
+        SDL3.Quit;
+        RETURN
+    END;
+    IGNORE(SDL3.SetRenderLogicalPresentation(renderer,640, 480, SDL3.LOGICAL_PRESENTATION_LETTERBOX));
+    
+    quit := FALSE;
+    WHILE ~quit DO
+        WHILE SDL3.PollEvent(event) DO
+            IF event.type = SDL3.EVENT_QUIT THEN
+                quit := TRUE
+            ELSIF event.type = SDL3.EVENT_KEY_DOWN THEN
+                keyev := SDL3.EventAsKeyboardEvent(event);
+                TRACE(CHR(INTEGER(SET(keyev.key) * SET(0FFH))));
+                IF keyev.key = SDL3.K_ESCAPE THEN
+                    quit := TRUE
+                END;
+            ELSIF event.type = SDL3.EVENT_MOUSE_BUTTON_DOWN THEN
+                mbuttonev := SDL3.EventAsMouseButtonEvent(event);
+                TRACE(mbuttonev.button);
+            ELSIF event.type = SDL3.EVENT_MOUSE_MOTION THEN
+                mmoveev := SDL3.EventAsMouseMotionEvent(event);
+                TRACE(mmoveev.x); TRACE(mmoveev.y);
+            ELSIF event.type = SDL3.EVENT_MOUSE_WHEEL THEN
+                mwheelev := SDL3.EventAsMouseWheelEvent(event);
+                TRACE(mwheelev.integer_y);
+            END;
+        END;
+        IGNORE(SDL3.SetRenderDrawColorFloat(renderer, 1.0, 1.0, 1.0, SDL3.ALPHA_OPAQUE_FLOAT)); (* white color, full alpha. *)
+        
+        (* clear the window to the draw color. *)
+        IGNORE(SDL3.RenderClear(renderer));
+
+        (* put the newly-cleared rendering on the screen. *)
+        IGNORE(SDL3.RenderPresent(renderer));
+    END;
+    IF renderer # NIL THEN SDL3.DestroyRenderer(renderer) END;
+    IF window # NIL THEN SDL3.DestroyWindow(window) END;
+    SDL3.Quit;
+END EventTest;
+
+BEGIN
+    EventTest;
+    (* Example18; *) (* 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 18 *)
     (* TestPath; *)
 END Test.
