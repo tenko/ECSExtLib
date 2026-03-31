@@ -1,4 +1,10 @@
 // SDL3 API wrapper
+// SDL_clipboard.h
+SDL3FUNCTION (SDL_GetClipboardText, 0)
+SDL3FUNCTION (SDL_HasClipboardText, 0)
+SDL3FUNCTION (SDL_SetClipboardText, 1)
+// SDL_SetHint.h
+SDL3FUNCTION (SDL_SetHint, 2)
 // SDL_filesystem.h
 SDL3FUNCTION (SDL_CopyFile, 2)
 SDL3FUNCTION (SDL_CreateDirectory, 1)
@@ -31,6 +37,11 @@ SDL3FUNCTION (SDL_ReadIO, 3)
 SDL3FUNCTION (SDL_SeekIO, 3)
 SDL3FUNCTION (SDL_TellIO, 1)
 SDL3FUNCTION (SDL_WriteIO, 3)
+//  SDL_keyboard.h
+SDL3FUNCTION (SDL_StartTextInput, 1)
+SDL3FUNCTION (SDL_StopTextInput, 1)
+SDL3FUNCTION (SDL_ClearComposition, 1)
+SDL3FUNCTION (SDL_SetTextInputArea, 3)
 //  SDL_messagebox.h
 SDL3FUNCTION (SDL_ShowSimpleMessageBox, 4)
 // SDL_misc.h
@@ -74,7 +85,9 @@ SDL3FUNCTION (SDL_CreateRenderer, 2)
 SDL3FUNCTION (SDL_DestroyRenderer, 1)
 SDL3FUNCTION (SDL_CreateWindowAndRenderer, 6)
 SDL3FUNCTION (SDL_SetRenderLogicalPresentation, 4)
+SDL3FUNCTION (SDL_ConvertEventToRenderCoordinates, 2)
 SDL3FUNCTION (SDL_GetRenderOutputSize, 3)
+SDL3FUNCTIONRAW (SDL_RenderCoordinatesToWindow, 0)
 SDL3FUNCTIONVAR (SDL_SetRenderScale, iff)
 SDL3FUNCTION (SDL_SetRenderViewport, 2)
 SDL3FUNCTION (SDL_SetRenderClipRect, 2)
@@ -106,7 +119,10 @@ SDL3FUNCTION (SDL_LoadPNG, 1)
 SDL3FUNCTION (SDL_FillSurfaceRect, 3)
 SDL3FUNCTION (SDL_DestroySurface, 1)
 // SDL_stdinc.h
+SDL3FUNCTION (SDL_free, 1)
 SDL3FUNCTION (SDL_strlen, 1)
+SDL3FUNCTION (SDL_StepUTF8, 2)
+SDL3FUNCTION (SDL_StepBackUTF8, 2)
 SDL3FUNCTION (SDL_memcpy, 3)
 SDL3FUNCTION (SDL_memset, 3)
 SDL3FUNCTION (SDL_srand, 1)

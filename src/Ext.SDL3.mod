@@ -354,6 +354,9 @@ CONST PATHTYPE_NONE*    	= 0;
 CONST PATHTYPE_FILE*      	= 1;
 CONST PATHTYPE_DIRECTORY* 	= 2;
 CONST PATHTYPE_OTHER*		= 3;
+
+(* SDL_hints.h *)
+CONST HINT_IME_IMPLEMENTED_UI*    = "SDL_IME_IMPLEMENTED_UI";
     
 (* SDL_init.h *)
 CONST INIT_AUDIO*       = 00000010H;
@@ -814,9 +817,35 @@ CONST WINDOW_NOT_FOCUSABLE*         = Uint64(0000000080000000H);
 VAR ^ TimerCallbackWrapper ["_system_callback_iii"]: SYSTEM.BYTE;
     
 (* SDL_stdinc.h *)
+PROCEDURE ^ free* ["SDL_free"] (mem : SYSTEM.ADDRESS);
 PROCEDURE ^ memcpy* ["SDL_memcpy"] (dst : SYSTEM.ADDRESS; src : SYSTEM.ADDRESS; len : Uint64): SYSTEM.ADDRESS;
 PROCEDURE ^ memset* ["SDL_memset"] (dst : SYSTEM.ADDRESS; c : INTEGER;  len : Uint64): SYSTEM.ADDRESS;
 PROCEDURE ^ strlen* ["SDL_strlen"] (str : POINTER TO VAR- CHAR): LENGTH;
+
+(*  SDL_clipboard.h *)
+PROCEDURE ^ SDLGetClipboardText ["SDL_GetClipboardText"] (): PCHAR;
+PROCEDURE GetClipboardText*(VAR text : STRING): BOOLEAN;
+VAR
+    x : PCHAR;
+    len : LENGTH;
+BEGIN
+    x := SDLGetClipboardText();
+    len := 0;
+    IF x # NIL THEN len := strlen(x) END;
+    IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
+    IF text = NIL THEN 
+        NEW(text, len + 1)
+    ELSIF LEN(text^) < (len + 1) THEN
+        DISPOSE(text);
+        NEW(text, len + 1)
+    END;
+    IGNORE(memcpy(SYSTEM.ADR(text^[0]), SYSTEM.VAL(SYSTEM.ADDRESS, x), len + 1));
+    free(SYSTEM.VAL(SYSTEM.ADDRESS, x));
+    RETURN TRUE
+END GetClipboardText;
+
+PROCEDURE ^ HasClipboardText* ["SDL_HasClipboardText"] (): BOOLEAN;
+PROCEDURE ^ SetClipboardText* ["SDL_SetClipboardText"] (text: PCHAR): BOOLEAN;
 
 (* SDL_filesystem.h *)
 PROCEDURE ^ SDLCopyFile ["SDL_CopyFile"] (oldpath: PCHAR; newpath : PCHAR): BOOLEAN;
@@ -1005,6 +1034,11 @@ END EventAsMouseMotionEvent;
 PROCEDURE EventAsMouseWheelEvent* (event- : Event): PtrMouseWheelEvent;
 BEGIN RETURN SYSTEM.VAL(PtrMouseWheelEvent, PTR(event));
 END EventAsMouseWheelEvent;
+(* SDL_hints.h *)
+PROCEDURE ^ SDLSetHint ["SDL_SetHint"] (name: POINTER TO VAR- CHAR; value: POINTER TO VAR- CHAR): BOOLEAN;
+PROCEDURE SetHint *(name-: ARRAY OF CHAR; value-: ARRAY OF CHAR): BOOLEAN;
+BEGIN RETURN SDLSetHint (PTR(name[0]), PTR(value[0]))
+END SetHint ;
 
 (* SDL_iostream.h *)
 PROCEDURE ^ CloseIO* ["SDL_CloseIO"] (context : POINTER TO VAR IOStream): BOOLEAN;
@@ -1044,6 +1078,16 @@ BEGIN
 	IF size <= 0 THEN RETURN 0 END;
 	RETURN SDLWriteIO(context, SYSTEM.ADR(buffer[0]), size)
 END WriteStr;
+
+(* SDL_keyboard.h *)
+PROCEDURE ^ StartTextInput* ["SDL_StartTextInput"] (window : POINTER TO VAR Window): BOOLEAN;
+PROCEDURE ^ StopTextInput* ["SDL_StopTextInput"] (window : POINTER TO VAR Window): BOOLEAN;
+PROCEDURE ^ ClearComposition* ["SDL_ClearComposition"] (window : POINTER TO VAR Window): BOOLEAN;
+
+PROCEDURE ^ SDLSetTextInputArea ["SDL_SetTextInputArea"] (window : POINTER TO VAR Window; rect : POINTER TO VAR- Rect; cursor: INTEGER): BOOLEAN;
+PROCEDURE SetTextInputArea*(window : POINTER TO VAR Window; rect- : Rect; cursor: INTEGER): BOOLEAN;
+BEGIN RETURN SDLSetTextInputArea(window, PTR(rect), cursor)
+END SetTextInputArea;
 
 (* SDL_messagebox.h *)
 PROCEDURE ^ SDLShowSimpleMessageBox ["SDL_ShowSimpleMessageBox"] (flags : Uint32; title, message: POINTER TO VAR- CHAR; window : POINTER TO VAR Window): BOOLEAN;
@@ -1163,6 +1207,15 @@ PROCEDURE SetStringProperty*(props : Uint32; name-: ARRAY OF CHAR; value-: ARRAY
 BEGIN RETURN SDLSetStringProperty(props, PTR(name[0]), PTR(value[0]))
 END SetStringProperty;
 
+(* SDL_rect.h *)
+PROCEDURE RectToFRect* (rect- : Rect; VAR frect : FRect);
+BEGIN
+    frect.x := rect.x;
+    frect.y := rect.y;
+    frect.w := rect.w;
+    frect.h := rect.h;
+END RectToFRect;
+
 (* SDL_render.h *)
 PROCEDURE ^ DestroyRenderer* ["SDL_DestroyRenderer"] (renderer : POINTER TO VAR Renderer);
 
@@ -1202,6 +1255,12 @@ PROCEDURE ^ SetTextureColorModFloat* ["SDL_SetTextureColorModFloat_wrap"] (textu
 PROCEDURE ^ UnlockTexture* ["SDL_UnlockTexture"] (texture : POINTER TO VAR Texture);
 PROCEDURE ^ DestroyTexture* ["SDL_DestroyTexture"] (texture : POINTER TO VAR Texture);
 PROCEDURE ^ SetRenderLogicalPresentation* ["SDL_SetRenderLogicalPresentation"] (renderer : POINTER TO VAR Renderer; w, h : INTEGER; mode: INTEGER): BOOLEAN;
+PROCEDURE ^ ConvertEventToRenderCoordinates* ["SDL_ConvertEventToRenderCoordinates"] (renderer : POINTER TO VAR Renderer;  event: POINTER TO VAR Event): BOOLEAN;
+
+PROCEDURE ^ SDLRenderCoordinatesToWindow ["SDL_RenderCoordinatesToWindow_wrap"] (renderer : POINTER TO VAR Renderer; x : REAL32; y : REAL32; window_x : POINTER TO VAR REAL32; window_y : POINTER TO VAR REAL32): BOOLEAN;
+PROCEDURE RenderCoordinatesToWindow*(renderer : POINTER TO VAR Renderer; x : REAL32; y : REAL32; VAR window_x : REAL32; VAR window_y : REAL32): BOOLEAN;
+BEGIN RETURN SDLRenderCoordinatesToWindow(renderer, x, y, PTR(window_x), PTR(window_y))
+END RenderCoordinatesToWindow;
 
 PROCEDURE ^ SDLGetRenderOutputSize ["SDL_GetRenderOutputSize"] (renderer : POINTER TO VAR Renderer; w, h: POINTER TO VAR INTEGER): BOOLEAN;
 PROCEDURE GetRenderOutputSize*(renderer : POINTER TO VAR Renderer; VAR w, h: INTEGER): BOOLEAN;
@@ -1277,6 +1336,9 @@ END LoadPNG;
 PROCEDURE ^ FillSurfaceRect* ["SDL_FillSurfaceRect"] (dst : POINTER TO VAR Surface; rect : POINTER TO VAR Rect; color: Uint32): BOOLEAN;
 
 (* SDL_stdinc.h *)
+PROCEDURE ^ StepUTF8* ["SDL_StepUTF8"] (pstr : SYSTEM.ADDRESS; pslen : POINTER TO VAR LENGTH): Uint32;
+PROCEDURE ^ StepBackUTF8* ["SDL_StepBackUTF8"] (start : POINTER TO VAR- CHAR; pstr : SYSTEM.ADDRESS): Uint32;
+
 PROCEDURE ^ srand* ["SDL_srand"] (seed : Uint64);
 PROCEDURE ^ rand* ["SDL_rand"] (n : Sint32): Sint32;
 PROCEDURE ^ randf* ["SDL_randf"] (): REAL32;

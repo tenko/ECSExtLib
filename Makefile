@@ -96,14 +96,22 @@ extsdl3ttf.lib : build/Ext.SDL3TTF.obf build/sdl3ttf$(SYS).obf build/sdlttfwrap$
 	@touch $@
 	@linklib $@ $^
 
-testsdl3ttf$(PRG): misc/testsdl3ttf.mod extsdl3ttf.lib
+testsdl3ttf$(PRG): misc/testsdl3ttf.mod extsdl3ttf.lib extsdl3.lib
 	@echo building $@
 	@mkdir -p build
 	@cd build && cp -f ../misc/testsdl3ttf.mod .
 	@cd build && ecsd -r std.lib $(RTS) $(notdir $<) ../extsdl3ttf.lib ../extsdl3.lib
 	@cp build/testsdl3ttf$(PRG) testsdl3ttf$(PRG)
 	@$(EXEC) ./testsdl3ttf$(PRG)
-	
+
+editbox$(PRG): misc/editbox.mod extsdl3ttf.lib extsdl3.lib
+	@echo building $@
+	@mkdir -p build
+	@cd build && cp -f ../misc/editbox.mod .
+	@cd build && ecsd -r std.lib $(RTS) $(notdir $<) ../extsdl3ttf.lib ../extsdl3.lib
+	@cp build/editbox$(PRG) editbox$(PRG)
+	@$(EXEC) ./editbox$(PRG)
+		
 .PHONY: install
 install: extsqlite.lib extsdl3.lib
 	@echo Install

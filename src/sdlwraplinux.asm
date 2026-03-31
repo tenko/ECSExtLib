@@ -1,4 +1,17 @@
 ; Linux 64bit assembler wrapper for functional calls as currently ECS does not handle callbacks and float/double arguments       
+.code SDL_RenderCoordinatesToWindow_wrap
+  pop rbx
+    mov rdi, [rsp + 0]
+    movss   xmm0, dword [rsp + 8]
+    movss   xmm1, dword [rsp + 16]
+    mov rsi, [rsp + 24]
+    mov rdx, [rsp + 32]
+    mov r12, rsp
+    and rsp, ~1111b
+    call dword @SDL_RenderCoordinatesToWindow
+    mov rsp, r12
+    jmp rbx
+    
 .code SDL_SetRenderDrawColorFloat_wrap
     pop rbx
     mov rdi, [rsp + 0]

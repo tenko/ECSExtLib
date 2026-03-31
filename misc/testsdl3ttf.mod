@@ -63,7 +63,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
@@ -153,7 +153,7 @@ BEGIN
     
     quit := FALSE;
     WHILE ~quit DO
-        WHILE SDL3.PollEvent(PTR(event)) DO
+        WHILE SDL3.PollEvent(event) DO
             IF event.type = SDL3.EVENT_QUIT THEN
                 quit := TRUE
             END;
