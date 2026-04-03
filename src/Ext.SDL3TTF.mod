@@ -104,6 +104,15 @@ PROCEDURE SetTextColor*(text : POINTER TO VAR Text; r, g, b, a: INTEGER): BOOLEA
 BEGIN RETURN TTFSetTextColor(text, SDL3.Uint8(r), SDL3.Uint8(g), SDL3.Uint8(b), SDL3.Uint8(a))
 END SetTextColor;
 
+PROCEDURE ^ TTFGetTextColorFloat ["TTF_GetTextColorFloat"] (text : POINTER TO VAR Text; r, g, b, a : POINTER TO VAR REAL32) : BOOLEAN;
+PROCEDURE GetTextColorFloat*(text : POINTER TO VAR Text; VAR r, g, b, a: REAL32): BOOLEAN;
+BEGIN RETURN TTFGetTextColorFloat(text, PTR(r), PTR(g), PTR(b), PTR(a))
+END GetTextColorFloat;
+
+PROCEDURE ^ SetTextColorFloat*  ["TTF_SetTextColorFloat"] (text : POINTER TO VAR Text; r, g, b, a : REAL32) : BOOLEAN;
+
+PROCEDURE ^ GetTextEngine* ["TTF_GetTextEngine"] (text : POINTER TO VAR Text): POINTER TO VAR TextEngine;
+
 PROCEDURE ^ TTFGetTextSize ["TTF_GetTextSize"] (text : POINTER TO VAR Text; w, h: POINTER TO VAR INTEGER): BOOLEAN;
 PROCEDURE GetTextSize*(text : POINTER TO VAR Text; VAR w, h: INTEGER): BOOLEAN;
 BEGIN RETURN TTFGetTextSize(text, PTR(w), PTR(h))
@@ -114,10 +123,7 @@ PROCEDURE ^ SetTextWrapWidth* ["TTF_SetTextWrapWidth"] (text : POINTER TO VAR Te
 
 PROCEDURE ^ DeleteTextString* ["TTF_DeleteTextString"] (text : POINTER TO VAR Text; offset: INTEGER; length: INTEGER) : BOOLEAN;
 
-PROCEDURE ^ TTFInsertTextString ["TTF_InsertTextString"] (text : POINTER TO VAR Text; offset: INTEGER; string: POINTER TO VAR- CHAR; length: LENGTH) : BOOLEAN;
-PROCEDURE InsertTextString*(text : POINTER TO VAR Text; offset: INTEGER; string-: ARRAY OF CHAR; length: LENGTH): BOOLEAN;
-BEGIN RETURN TTFInsertTextString(text, offset, PTR(string[0]), length)
-END InsertTextString;
+PROCEDURE ^ InsertTextString* ["TTF_InsertTextString"] (text : POINTER TO VAR Text; offset: INTEGER; string: POINTER TO VAR- CHAR; length: LENGTH) : BOOLEAN;
 
 PROCEDURE ^ TTFGetTextSubString ["TTF_GetTextSubString"] (text : POINTER TO VAR Text; offset: INTEGER; substring: POINTER TO VAR- SubString) : BOOLEAN;
 PROCEDURE GetTextSubString*(text : POINTER TO VAR Text; offset: INTEGER; VAR substring-: SubString): BOOLEAN;
@@ -134,10 +140,7 @@ PROCEDURE GetTextSubStringForPoint*(text : POINTER TO VAR Text; x: INTEGER; y: I
 BEGIN RETURN TTFGetTextSubStringForPoint(text, x, y, PTR(substring))
 END GetTextSubStringForPoint;
 
-PROCEDURE ^ TTFGetTextSubStringsForRange ["TTF_GetTextSubStringsForRange"] (text : POINTER TO VAR Text; offset: INTEGER; length: INTEGER; count: POINTER TO VAR INTEGER): SYSTEM.ADDRESS;
-PROCEDURE GetTextSubStringsForRange*(text : POINTER TO VAR Text; offset: INTEGER; length: INTEGER; VAR count: INTEGER): SYSTEM.ADDRESS;
-BEGIN RETURN TTFGetTextSubStringsForRange(text, offset, length, PTR(count))
-END GetTextSubStringsForRange;
+PROCEDURE ^ GetTextSubStringsForRange* ["TTF_GetTextSubStringsForRange"] (text : POINTER TO VAR Text; offset: INTEGER; length: INTEGER; count: POINTER TO VAR INTEGER): SYSTEM.ADDRESS;
 
 PROCEDURE ^ DrawRendererText* ["TTF_DrawRendererText"] (text : POINTER TO VAR Text; x, y : REAL32) : BOOLEAN;
 

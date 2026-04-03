@@ -47,6 +47,7 @@ make PREFIX=~/.local install # install to ~/.local/lib
 make testsqlite # run sqlite test (use testsqlite.exe on Windows)
 make testsdl3 # run sdl3 test (use testsdl3.exe on Windows)
 make testsdl3ttf # run sdl3ttf test (use testsdl3ttf.exe on Windows)
+make editbox # run editbox test (use editbox.exe on Windows)
 ```
 
 ## TODO

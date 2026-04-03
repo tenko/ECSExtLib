@@ -48,7 +48,7 @@ TYPE MouseButtonEvent* = RECORD-
 END;
 TYPE PtrMouseButtonEvent* = POINTER TO VAR MouseButtonEvent;
 
- TYPE MouseMotionEvent* = RECORD-
+TYPE MouseMotionEvent* = RECORD-
 	type-: Uint32;
 	reserved: Uint32;
 	timestamp-: Uint64;
@@ -62,7 +62,7 @@ TYPE PtrMouseButtonEvent* = POINTER TO VAR MouseButtonEvent;
 END;
 TYPE PtrMouseMotionEvent* = POINTER TO VAR MouseMotionEvent;
 
- TYPE MouseWheelEvent* = RECORD-
+TYPE MouseWheelEvent* = RECORD-
 	type-: Uint32;
 	reserved: Uint32;
 	timestamp-: Uint64;
@@ -77,6 +77,41 @@ TYPE PtrMouseMotionEvent* = POINTER TO VAR MouseMotionEvent;
 	integer_y-: Sint32;
 END;
 TYPE PtrMouseWheelEvent* = POINTER TO VAR MouseWheelEvent;
+
+TYPE TextInputEvent* = RECORD-
+	type-: Uint32;
+	reserved: Uint32;
+	timestamp-: Uint64;
+	windowID-: Uint32;
+	text-: POINTER TO VAR- CHAR;
+END;
+TYPE PtrTextInputEvent* = POINTER TO VAR TextInputEvent;
+
+TYPE TextEditingEvent* = RECORD-
+	type-: Uint32;
+	reserved: Uint32;
+	timestamp-: Uint64;
+	windowID-: Uint32;
+	text-: POINTER TO VAR- CHAR;
+	start-: Sint32;
+	length-: Sint32;
+END;
+TYPE PtrTextEditingEvent* = POINTER TO VAR TextEditingEvent;
+
+TYPE TextEditingCandidatesEvent* = RECORD-
+	type-: Uint32;
+	reserved: Uint32;
+	timestamp-: Uint64;
+	windowID-: Uint32;
+	candidates-: SYSTEM.ADDRESS;
+	num_candidates-: Sint32;
+	selected_candidate-: Sint32;
+	horizontal-: BOOLEAN;
+	padding1: Uint8;
+	padding2: Uint8;
+	padding3: Uint8;
+END;
+TYPE PtrTextEditingCandidatesEvent* = POINTER TO VAR TextEditingCandidatesEvent;
 
 (* SDL_filesystem.h *)
 TYPE PathInfo* = RECORD-
@@ -649,6 +684,25 @@ CONST K_RMETA*                  = 020000005H;
 CONST K_LHYPER*                 = 020000006H;
 CONST K_RHYPER*                 = 020000007H;
 
+CONST KMOD_NONE*   = 0000H;
+CONST KMOD_LSHIFT* = 0001H;
+CONST KMOD_RSHIFT* = 0002H;
+CONST KMOD_LEVEL5* = 0004H;
+CONST KMOD_LCTRL*  = 0040H;
+CONST KMOD_RCTRL*  = 0080H;
+CONST KMOD_LALT*   = 0100H;
+CONST KMOD_RALT*   = 0200H;
+CONST KMOD_LGUI*   = 0400H;
+CONST KMOD_RGUI*   = 0800H;
+CONST KMOD_NUM*    = 1000H;
+CONST KMOD_CAPS*   = 2000H;
+CONST KMOD_MODE*   = 4000H;
+CONST KMOD_SCROLL* = 8000H;
+CONST KMOD_CTRL*   = KMOD_LCTRL + KMOD_RCTRL;
+CONST KMOD_SHIFT*  = KMOD_LSHIFT + KMOD_RSHIFT;
+CONST KMOD_ALT*    = KMOD_LALT + KMOD_RALT;   
+CONST KMOD_GUI*    = KMOD_LGUI + KMOD_RGUI;   
+
 (* SDL_messagebox.h *)
 CONST MESSAGEBOX_ERROR*                    = 00000010H;
 CONST MESSAGEBOX_WARNING*                  = 00000020H;
@@ -817,10 +871,11 @@ CONST WINDOW_NOT_FOCUSABLE*         = Uint64(0000000080000000H);
 VAR ^ TimerCallbackWrapper ["_system_callback_iii"]: SYSTEM.BYTE;
     
 (* SDL_stdinc.h *)
+PROCEDURE ^ malloc* ["SDL_malloc"] (size : LENGTH): SYSTEM.ADDRESS;
 PROCEDURE ^ free* ["SDL_free"] (mem : SYSTEM.ADDRESS);
 PROCEDURE ^ memcpy* ["SDL_memcpy"] (dst : SYSTEM.ADDRESS; src : SYSTEM.ADDRESS; len : Uint64): SYSTEM.ADDRESS;
 PROCEDURE ^ memset* ["SDL_memset"] (dst : SYSTEM.ADDRESS; c : INTEGER;  len : Uint64): SYSTEM.ADDRESS;
-PROCEDURE ^ strlen* ["SDL_strlen"] (str : POINTER TO VAR- CHAR): LENGTH;
+PROCEDURE ^ strlen* ["SDL_strlen"] (str : SYSTEM.ADDRESS): LENGTH;
 
 (*  SDL_clipboard.h *)
 PROCEDURE ^ SDLGetClipboardText ["SDL_GetClipboardText"] (): PCHAR;
@@ -831,7 +886,7 @@ VAR
 BEGIN
     x := SDLGetClipboardText();
     len := 0;
-    IF x # NIL THEN len := strlen(x) END;
+    IF x # NIL THEN len := strlen(SYSTEM.VAL(SYSTEM.ADDRESS, x)) END;
     IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
     IF text = NIL THEN 
         NEW(text, len + 1)
@@ -866,7 +921,7 @@ VAR
 BEGIN
     x := SDLGetBasePath();
     len := 0;
-    IF x # NIL THEN len := strlen(x) END;
+    IF x # NIL THEN len := strlen(SYSTEM.VAL(SYSTEM.ADDRESS, x)) END;
     IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
     IF path = NIL THEN 
         NEW(path, len + 1)
@@ -887,7 +942,7 @@ VAR
 BEGIN
     x := SDLGetCurrentDirectory();
     len := 0;
-    IF x # NIL THEN len := strlen(x) END;
+    IF x # NIL THEN len := strlen(SYSTEM.VAL(SYSTEM.ADDRESS, x)) END;
     IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
     IF path = NIL THEN 
         NEW(path, len + 1)
@@ -912,7 +967,7 @@ VAR
 BEGIN
     x := SDLGetPrefPath(PTR(org[0]), PTR(app[0]));
     len := 0;
-    IF x # NIL THEN len := strlen(x) END;
+    IF x # NIL THEN len := strlen(SYSTEM.VAL(SYSTEM.ADDRESS, x)) END;
     IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
     IF path = NIL THEN 
         NEW(path, len + 1)
@@ -933,7 +988,7 @@ VAR
 BEGIN
     x := SDLGetUserFolder(folder);
     len := 0;
-    IF x # NIL THEN len := strlen(x) END;
+    IF x # NIL THEN len := strlen(SYSTEM.VAL(SYSTEM.ADDRESS, x)) END;
     IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
     IF path = NIL THEN 
         NEW(path, len + 1)
@@ -1034,6 +1089,19 @@ END EventAsMouseMotionEvent;
 PROCEDURE EventAsMouseWheelEvent* (event- : Event): PtrMouseWheelEvent;
 BEGIN RETURN SYSTEM.VAL(PtrMouseWheelEvent, PTR(event));
 END EventAsMouseWheelEvent;
+
+PROCEDURE EventAsTextInputEvent* (event- : Event): PtrTextInputEvent;
+BEGIN RETURN SYSTEM.VAL(PtrTextInputEvent, PTR(event));
+END EventAsTextInputEvent;
+
+PROCEDURE EventAsTextEditingEvent* (event- : Event): PtrTextEditingEvent;
+BEGIN RETURN SYSTEM.VAL(PtrTextEditingEvent, PTR(event));
+END EventAsTextEditingEvent;
+
+PROCEDURE EventAsTextEditingCandidatesEvent* (event- : Event): PtrTextEditingCandidatesEvent;
+BEGIN RETURN SYSTEM.VAL(PtrTextEditingCandidatesEvent, PTR(event));
+END EventAsTextEditingCandidatesEvent;
+
 (* SDL_hints.h *)
 PROCEDURE ^ SDLSetHint ["SDL_SetHint"] (name: POINTER TO VAR- CHAR; value: POINTER TO VAR- CHAR): BOOLEAN;
 PROCEDURE SetHint *(name-: ARRAY OF CHAR; value-: ARRAY OF CHAR): BOOLEAN;
@@ -1074,7 +1142,7 @@ END WriteIO;
 PROCEDURE WriteStr*(context : POINTER TO VAR IOStream; buffer- : ARRAY OF CHAR): LENGTH;
 VAR size : LENGTH;
 BEGIN
-	size := strlen(PTR(buffer[0]));
+	size := strlen(SYSTEM.ADR(buffer[0]));
 	IF size <= 0 THEN RETURN 0 END;
 	RETURN SDLWriteIO(context, SYSTEM.ADR(buffer[0]), size)
 END WriteStr;
@@ -1137,7 +1205,7 @@ VAR
 BEGIN
 	rec.path := PTR(path[0]);
 	rec.args := NIL;
-	IF strlen(PTR(args[0])) > 0 THEN
+	IF strlen(SYSTEM.ADR(args[0])) > 0 THEN
 		rec.args := PTR(args[0])
 	END;
 	rec.sentinel := NIL;
@@ -1216,6 +1284,15 @@ BEGIN
     frect.h := rect.h;
 END RectToFRect;
 
+PROCEDURE PointInRectFloat* (p- : FPoint; r- : FRect): BOOLEAN;
+BEGIN
+    IF ((p.x >= r.x) & (p.x <= (r.x + r.w))) &
+       (p.y >= r.y) & (p.y <= (r.y + r.h)) THEN
+       RETURN TRUE
+    END;
+    RETURN FALSE
+END PointInRectFloat;
+
 (* SDL_render.h *)
 PROCEDURE ^ DestroyRenderer* ["SDL_DestroyRenderer"] (renderer : POINTER TO VAR Renderer);
 
@@ -1266,6 +1343,11 @@ PROCEDURE ^ SDLGetRenderOutputSize ["SDL_GetRenderOutputSize"] (renderer : POINT
 PROCEDURE GetRenderOutputSize*(renderer : POINTER TO VAR Renderer; VAR w, h: INTEGER): BOOLEAN;
 BEGIN RETURN SDLGetRenderOutputSize(renderer, PTR(w), PTR(h))
 END GetRenderOutputSize;
+
+PROCEDURE ^ SDLGetRenderSafeArea ["SDL_GetRenderSafeArea"] (renderer : POINTER TO VAR Renderer; rect: POINTER TO VAR Rect): BOOLEAN;
+PROCEDURE GetRenderSafeArea*(renderer : POINTER TO VAR Renderer; VAR rect : Rect): BOOLEAN;
+BEGIN RETURN SDLGetRenderSafeArea(renderer, PTR(rect))
+END GetRenderSafeArea;
 
 PROCEDURE ^ SetRenderViewport* ["SDL_SetRenderViewport"] (renderer : POINTER TO VAR Renderer; rect : POINTER TO VAR Rect): BOOLEAN;
 PROCEDURE ^ SetRenderClipRect* ["SDL_SetRenderClipRect"] (renderer : POINTER TO VAR Renderer; rect : POINTER TO VAR Rect): BOOLEAN;
