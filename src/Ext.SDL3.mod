@@ -1328,16 +1328,20 @@ PROCEDURE GetTextureSize*(texture : POINTER TO VAR Texture; VAR w, h: REAL32): B
 BEGIN RETURN SDLGetTextureSize(texture, PTR(w), PTR(h))
 END GetTextureSize;
 
+(*
 PROCEDURE ^ SetTextureColorModFloat* ["SDL_SetTextureColorModFloat_wrap"] (texture : POINTER TO VAR Texture; r : REAL32; g : REAL32; b : REAL32): BOOLEAN;
+*)
 PROCEDURE ^ UnlockTexture* ["SDL_UnlockTexture"] (texture : POINTER TO VAR Texture);
 PROCEDURE ^ DestroyTexture* ["SDL_DestroyTexture"] (texture : POINTER TO VAR Texture);
 PROCEDURE ^ SetRenderLogicalPresentation* ["SDL_SetRenderLogicalPresentation"] (renderer : POINTER TO VAR Renderer; w, h : INTEGER; mode: INTEGER): BOOLEAN;
 PROCEDURE ^ ConvertEventToRenderCoordinates* ["SDL_ConvertEventToRenderCoordinates"] (renderer : POINTER TO VAR Renderer;  event: POINTER TO VAR Event): BOOLEAN;
 
+(*
 PROCEDURE ^ SDLRenderCoordinatesToWindow ["SDL_RenderCoordinatesToWindow_wrap"] (renderer : POINTER TO VAR Renderer; x : REAL32; y : REAL32; window_x : POINTER TO VAR REAL32; window_y : POINTER TO VAR REAL32): BOOLEAN;
 PROCEDURE RenderCoordinatesToWindow*(renderer : POINTER TO VAR Renderer; x : REAL32; y : REAL32; VAR window_x : REAL32; VAR window_y : REAL32): BOOLEAN;
 BEGIN RETURN SDLRenderCoordinatesToWindow(renderer, x, y, PTR(window_x), PTR(window_y))
 END RenderCoordinatesToWindow;
+*)
 
 PROCEDURE ^ SDLGetRenderOutputSize ["SDL_GetRenderOutputSize"] (renderer : POINTER TO VAR Renderer; w, h: POINTER TO VAR INTEGER): BOOLEAN;
 PROCEDURE GetRenderOutputSize*(renderer : POINTER TO VAR Renderer; VAR w, h: INTEGER): BOOLEAN;
@@ -1351,13 +1355,17 @@ END GetRenderSafeArea;
 
 PROCEDURE ^ SetRenderViewport* ["SDL_SetRenderViewport"] (renderer : POINTER TO VAR Renderer; rect : POINTER TO VAR Rect): BOOLEAN;
 PROCEDURE ^ SetRenderClipRect* ["SDL_SetRenderClipRect"] (renderer : POINTER TO VAR Renderer; rect : POINTER TO VAR Rect): BOOLEAN;
+(*
 PROCEDURE ^ SetRenderScale* ["SDL_SetRenderScale"] (renderer : POINTER TO VAR Renderer; scaleX: REAL32; scaleY: REAL32): BOOLEAN;
+*)
 PROCEDURE ^ SDLSetRenderDrawColor* ["SDL_SetRenderDrawColor"] (renderer : POINTER TO VAR Renderer; r, g, b, a: Uint8): BOOLEAN;
 (* Set the color used for drawing operations. *)
 PROCEDURE SetRenderDrawColor*(renderer : POINTER TO VAR Renderer; r, g, b, a: INTEGER): BOOLEAN;
 BEGIN RETURN SDLSetRenderDrawColor(renderer, Uint8(r), Uint8(g), Uint8(b), Uint8(a))
 END SetRenderDrawColor;
+(*
 PROCEDURE ^ SetRenderDrawColorFloat* ["SDL_SetRenderDrawColorFloat_wrap"] (renderer : POINTER TO VAR Renderer; r, g, b, a: REAL32): BOOLEAN;
+*)
 PROCEDURE ^ RenderClear* ["SDL_RenderClear"] (renderer : POINTER TO VAR Renderer): BOOLEAN;
 PROCEDURE ^ SDLRenderFillRect* ["SDL_RenderFillRect"] (renderer : POINTER TO VAR Renderer; rect : SYSTEM.ADDRESS): BOOLEAN;
 (** Fill a rectangle on the current rendering target with the drawing color at subpixel precision. *)
@@ -1369,8 +1377,10 @@ PROCEDURE ^ SDLRenderLines* ["SDL_RenderLines"] (renderer : POINTER TO VAR Rende
 PROCEDURE RenderLines*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint; count : LENGTH): BOOLEAN;
 BEGIN RETURN SDLRenderLines(renderer, SYSTEM.ADR(points[0]), SYSTEM.VAL(INTEGER, count))
 END RenderLines;
+(*
 PROCEDURE ^ RenderLine* ["SDL_RenderLine_wrap"] (renderer : POINTER TO VAR Renderer; x1, y1, x2, y2 : REAL32): BOOLEAN;
 PROCEDURE ^ RenderPoint* ["SDL_RenderPoint"] (renderer : POINTER TO VAR Renderer; x, y: REAL32): BOOLEAN;
+*)
 PROCEDURE ^ SDLRenderPoints* ["SDL_RenderPoints"] (renderer : POINTER TO VAR Renderer; points : SYSTEM.ADDRESS; count : INTEGER): BOOLEAN;
 (** Draw multiple points on the current rendering target at subpixel precision. *)
 PROCEDURE RenderPoints*(renderer : POINTER TO VAR Renderer; points- : ARRAY OF FPoint; count : LENGTH): BOOLEAN;
@@ -1394,16 +1404,19 @@ END RenderFillRects;
 
 PROCEDURE ^ RenderTexture* ["SDL_RenderTexture"] (renderer : POINTER TO VAR Renderer; texture : POINTER TO VAR Texture; srcrect : POINTER TO VAR FRect;
                                                   dstrect : POINTER TO VAR FRect): BOOLEAN;
+(*
 PROCEDURE ^ RenderTextureRotated* ["SDL_RenderTextureRotated_wrap"] (renderer : POINTER TO VAR Renderer; texture : POINTER TO VAR Texture; srcrect : POINTER TO VAR FRect;
                                                                      dstrect : POINTER TO VAR FRect; angle : REAL64; center : POINTER TO VAR FPoint; flip : INTEGER): BOOLEAN;
-
+*)
 PROCEDURE ^ RenderGeometry* ["SDL_RenderGeometry"] (renderer : POINTER TO VAR Renderer; texture : POINTER TO VAR Texture; vertices : POINTER TO VAR Vertex;
                                                     num_vertices : INTEGER; indices: POINTER TO VAR INTEGER; num_indices: INTEGER): BOOLEAN;
 
+(*
 PROCEDURE ^ SDLRenderDebugText ["SDL_RenderDebugText_wrap"] (renderer : POINTER TO VAR Renderer; x: REAL32; y: REAL32; str: POINTER TO VAR- CHAR): BOOLEAN;
 PROCEDURE RenderDebugText*(renderer : POINTER TO VAR Renderer; x: REAL32; y: REAL32; str-: ARRAY OF CHAR): BOOLEAN;
 BEGIN RETURN SDLRenderDebugText(renderer, x, y, PTR(str[0]))
 END RenderDebugText;
+*)
 
 PROCEDURE ^ RenderPresent* ["SDL_RenderPresent"] (renderer : POINTER TO VAR Renderer): BOOLEAN;
 
@@ -1424,6 +1437,7 @@ PROCEDURE ^ StepBackUTF8* ["SDL_StepBackUTF8"] (start : POINTER TO VAR- CHAR; ps
 PROCEDURE ^ srand* ["SDL_srand"] (seed : Uint64);
 PROCEDURE ^ rand* ["SDL_rand"] (n : Sint32): Sint32;
 PROCEDURE ^ randf* ["SDL_randf"] (): REAL32;
+(*
 PROCEDURE ^ acos* ["SDL_acos"] (x : REAL64): REAL64;
 PROCEDURE ^ acosf* ["SDL_acosf"] (x : REAL32): REAL32;
 PROCEDURE ^ asin* ["SDL_asin"] (x : REAL64): REAL64;
@@ -1466,6 +1480,7 @@ PROCEDURE ^ sqrt* ["SDL_sqrt"] (x : REAL64): REAL64;
 PROCEDURE ^ sqrtf* ["SDL_sqrtf"] (x : REAL32): REAL32;
 PROCEDURE ^ tan* ["SDL_tan"] (x : REAL64): REAL64;
 PROCEDURE ^ tanf* ["SDL_tanf"] (x : REAL32): REAL32;
+*)
 
 (* SDL_time.h *)
 PROCEDURE ^ SDLDateTimeToTime ["SDL_DateTimeToTime"] (dt : SYSTEM.ADDRESS; ticks : POINTER TO VAR Uint64): BOOLEAN;

@@ -3,6 +3,7 @@ MODULE Test;
 IMPORT SYSTEM;
 IN Ext IMPORT SDL3;
 
+(*
 (* https://examples.libsdl.org/SDL3/renderer/01-clear/ *)
 PROCEDURE Example1();
 VAR
@@ -53,7 +54,9 @@ BEGIN
     IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END Example1;
+*)
 
+(*
 (* https://examples.libsdl.org/SDL3/renderer/02-primitives/ *)
 PROCEDURE Example2();
 VAR
@@ -129,7 +132,9 @@ BEGIN
     IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END Example2;
+*)
 
+(*
 (* https://examples.libsdl.org/SDL3/renderer/03-lines/ *)
 PROCEDURE Example3();
 VAR
@@ -213,6 +218,7 @@ BEGIN
     IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END Example3;
+*)
 
 (* https://examples.libsdl.org/SDL3/renderer/04-points/ *)
 PROCEDURE Example4();
@@ -616,6 +622,7 @@ BEGIN
     SDL3.Quit;
 END Example7;
 
+(*
 (* https://examples.libsdl.org/SDL3/renderer/08-rotating-textures/ *)
 PROCEDURE Example8();
 CONST
@@ -812,6 +819,7 @@ BEGIN
     IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END Example9;
+*)
 
 (* https://examples.libsdl.org/SDL3/renderer/10-geometry/ *)
 PROCEDURE Example10();
@@ -969,6 +977,7 @@ BEGIN
     SDL3.Quit;
 END Example10;
 
+(*
 (* https://examples.libsdl.org/SDL3/renderer/11-color-mods/ *)
 PROCEDURE Example11();
 CONST
@@ -1089,6 +1098,7 @@ BEGIN
     IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END Example11;
+*)
 
 (* https://examples.libsdl.org/SDL3/renderer/14-viewport/ *)
 PROCEDURE Example14();
@@ -1213,6 +1223,7 @@ BEGIN
     SDL3.Quit;
 END Example14;
 
+(*
 (* https://examples.libsdl.org/SDL3/renderer/15-cliprect/ *)
 PROCEDURE Example15();
 CONST
@@ -1333,7 +1344,9 @@ BEGIN
     IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END Example15;
+*)
 
+(*
 (* https://examples.libsdl.org/SDL3/renderer/18-debug-text/ *)
 PROCEDURE Example18();
 CONST
@@ -1394,6 +1407,7 @@ BEGIN
     IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END Example18;
+*)
 
 PROCEDURE TestPath;
 VAR
@@ -1410,6 +1424,7 @@ BEGIN
     DISPOSE(s);
 END TestPath;
 
+(*
 PROCEDURE EventTest();
 VAR
     window : SDL3.PtrWindow;
@@ -1469,9 +1484,10 @@ BEGIN
     IF window # NIL THEN SDL3.DestroyWindow(window) END;
     SDL3.Quit;
 END EventTest;
+*)
 
 BEGIN
-    EventTest;
-    (* Example18; *) (* 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 18 *)
+    (* EventTest; *)
+    Example4; (* 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 18 *)
     (* TestPath; *)
 END Test.
