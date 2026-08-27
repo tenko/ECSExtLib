@@ -20,38 +20,34 @@ endif
 all : extsqlite.lib extsdl3.lib extsdl3ttf.lib
 
 build/%.obf: src/%.asm
-	@echo compiling $< 
-	@mkdir -p build
-	@cd build && ecsd -c $(addprefix ../, $<)
-
+	@echo Compiling $<
+	@mkdir -p $(@D)
+	@cd $(@D) && ecsd -c ../$<
+	
+build/%.obf: src/%.cpp
+	@echo Compiling $<
+	@mkdir -p $(@D)
+	@cd $(@D) && ecsd -c ../$<
+	
 build/%.obf: src/%.mod
-	@echo compiling $< 
-	@mkdir -p build
-	@cd build && ecsd -c $(addprefix ../, $<)
+	@echo Compiling $<
+	@mkdir -p $(@D)
+	@cd $(@D) && ecsd -c ../$<
 
 build/sqlite$(SYS).obf: src/sqlite$(SYS).cpp
 	@echo building $@:
 	@mkdir -p build
-	@cd build && cp ../src/$(SYS)lib.hpp .
-	@cd build && cp ../src/sqlite.cpp .
-	@cd build && cp ../src/sqlite$(SYS).cpp .
-	@cd build && ecsd -c $(notdir $<)
+	@cd build && ecsd -c $(addprefix ../, $<)
 
 build/sdl3$(SYS).obf: src/sdl3$(SYS).cpp
 	@echo building $@:
 	@mkdir -p build
-	@cd build && cp ../src/$(SYS)lib.hpp .
-	@cd build && cp ../src/sdl3.cpp .
-	@cd build && cp ../src/sdl3$(SYS).cpp .
-	@cd build && ecsd -c $(notdir $<)
+	@cd build && ecsd -c $(addprefix ../, $<)
 
 build/sdl3ttf$(SYS).obf: src/sdl3ttf$(SYS).cpp
 	@echo building $@:
 	@mkdir -p build
-	@cd build && cp ../src/$(SYS)lib.hpp .
-	@cd build && cp ../src/sdl3ttf.cpp .
-	@cd build && cp ../src/sdl3ttf$(SYS).cpp .
-	@cd build && ecsd -c $(notdir $<)
+	@cd build && ecsd -c $(addprefix ../, $<)
 	
 build/Ext.Sqlite.obf : src/Ext.Sqlite.mod
 build/sqlite$(SYS).obf :  src/$(SYS)lib.hpp src/sqlite$(SYS).cpp src/sqlite.cpp

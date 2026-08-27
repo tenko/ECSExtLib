@@ -77,12 +77,11 @@ CONST IMAGE_SDF*        = 3;
 PROCEDURE ^ Init* ["TTF_Init"] (): BOOLEAN;
 PROCEDURE ^ Quit* ["TTF_Quit"] ();
 
-(*
 PROCEDURE ^ TTFOpenFont ["TTF_OpenFont"] (file: POINTER TO VAR- CHAR; ptsize : REAL32): POINTER TO VAR Font;
 PROCEDURE OpenFont*(file-: ARRAY OF CHAR; ptsize : REAL32): POINTER TO VAR Font;
 BEGIN RETURN TTFOpenFont(PTR(file[0]), ptsize)
 END OpenFont;
-*)
+
 PROCEDURE ^ CloseFont* ["TTF_CloseFont"] (font: POINTER TO VAR Font);
 PROCEDURE ^ GetFontHeight* ["TTF_GetFontHeight"] (font: POINTER TO VAR Font): INTEGER;
 
@@ -111,10 +110,7 @@ PROCEDURE GetTextColorFloat*(text : POINTER TO VAR Text; VAR r, g, b, a: REAL32)
 BEGIN RETURN TTFGetTextColorFloat(text, PTR(r), PTR(g), PTR(b), PTR(a))
 END GetTextColorFloat;
 
-(*
 PROCEDURE ^ SetTextColorFloat*  ["TTF_SetTextColorFloat"] (text : POINTER TO VAR Text; r, g, b, a : REAL32) : BOOLEAN;
-*)
-
 PROCEDURE ^ GetTextEngine* ["TTF_GetTextEngine"] (text : POINTER TO VAR Text): POINTER TO VAR TextEngine;
 
 PROCEDURE ^ TTFGetTextSize ["TTF_GetTextSize"] (text : POINTER TO VAR Text; w, h: POINTER TO VAR INTEGER): BOOLEAN;

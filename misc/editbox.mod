@@ -937,7 +937,7 @@ BEGIN
             edit.InsertPStr(inputEvent.text);
             RETURN TRUE;
         | SDL3.EVENT_TEXT_EDITING:
-            (* TODO : Does not work *)
+            (* TODO : Does not work on Wayland/Linux. Works on Windows 10.*)
             (*
             editEvent := SDL3.EventAsTextEditingEvent(event);
             edit.HandleComposition(editEvent);
