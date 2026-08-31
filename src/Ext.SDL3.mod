@@ -1190,6 +1190,27 @@ PROCEDURE MapRGB*(format: PtrPixelFormatDetails; palette: PtrPalette; r, g, b : 
 BEGIN RETURN SDLMapRGB(format, palette, Uint8(r), Uint8(g), Uint8(b))
 END MapRGB;
 
+(* SDL_platform.h *)
+PROCEDURE ^ SDLGetPlatform ["SDL_GetPlatform"] (): PCHAR;
+PROCEDURE GetPlatform*(VAR path : STRING): BOOLEAN;
+VAR
+    x : PCHAR;
+    len : LENGTH;
+BEGIN
+    x := SDLGetPlatform();
+    len := 0;
+    IF x # NIL THEN len := strlen(SYSTEM.VAL(SYSTEM.ADDRESS, x)) END;
+    IF (x = NIL) OR (len = 0) THEN RETURN FALSE END;
+    IF path = NIL THEN 
+        NEW(path, len + 1)
+    ELSIF LEN(path^) < (len + 1) THEN
+        DISPOSE(path);
+        NEW(path, len + 1)
+    END;
+    IGNORE(memcpy(SYSTEM.ADR(path^[0]), SYSTEM.VAL(SYSTEM.ADDRESS, x), len + 1));
+    RETURN TRUE
+END GetPlatform;
+
 (* SDL_process.h *)
 PROCEDURE ^ SDLCreateProcess ["SDL_CreateProcess"] (args : SYSTEM.ADDRESS; pipe_stdio : BOOLEAN): POINTER TO VAR Process;
 (** Create a new process. *)

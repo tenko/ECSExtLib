@@ -3,8 +3,10 @@ MODULE Test;
 IN Ext IMPORT SDL3;
 IN Ext IMPORT SDL3TTF;
 
-CONST FONT = '/usr/share/fonts/TTF/Inconsolata-Regular.ttf';
-
+CONST
+	LINFONT = '/usr/share/fonts/TTF/Inconsolata-Regular.ttf';
+	WINFONT = 'C:\Windows\Fonts\Arial.ttf';
+	
 PROCEDURE Example1();
 VAR
     window : SDL3.PtrWindow;
@@ -15,6 +17,7 @@ VAR
     color : SDL3.Color;
     event : SDL3.Event;
     dst : SDL3.FRect;
+    s : SDL3.STRING;
     scale : REAL32;
     w, h : INTEGER;
     quit : BOOLEAN;
@@ -37,8 +40,20 @@ BEGIN
         RETURN
     END;
     
-    (* Open the font *)
-    font := SDL3TTF.OpenFont(FONT, 18.0);
+    (* Get platform *)
+    IF ~SDL3.GetPlatform(s) THEN
+    	SDL3.LogStr("Couldn't find platform");
+        SDL3.Quit;
+        RETURN
+    END;
+
+	(* Open the font *)
+    IF s^ = "Windows" THEN
+    	font := SDL3TTF.OpenFont(WINFONT, 18.0);
+    ELSIF s^ = "Linux" THEN
+    	font := SDL3TTF.OpenFont(LINFONT, 18.0);
+    END;
+    
     IF font = NIL THEN
         SDL3.LogStr("Couldn't open font");
         SDL3.Log(SDL3.GetError());
@@ -98,6 +113,7 @@ VAR
     text : SDL3TTF.PtrText;
     font : SDL3TTF.PtrFont;
     event : SDL3.Event;
+    s : SDL3.STRING;
     x, y, scale : REAL32;
     w, h, text_w, text_h : INTEGER;
     quit : BOOLEAN;
@@ -119,14 +135,18 @@ BEGIN
         RETURN
     END;
     
-    (* Open the font *)
-    font := SDL3TTF.OpenFont(FONT, 18.0);
-    IF font = NIL THEN
-        SDL3.LogStr("Couldn't open font");
-        SDL3.Log(SDL3.GetError());
-        SDL3TTF.Quit();
+    (* Get platform *)
+    IF ~SDL3.GetPlatform(s) THEN
+    	SDL3.LogStr("Couldn't find platform");
         SDL3.Quit;
         RETURN
+    END;
+
+	(* Open the font *)
+    IF s^ = "Windows" THEN
+    	font := SDL3TTF.OpenFont(WINFONT, 18.0);
+    ELSIF s^ = "Linux" THEN
+    	font := SDL3TTF.OpenFont(LINFONT, 18.0);
     END;
     
     (* Create the text engine *)
@@ -179,5 +199,5 @@ BEGIN
 END Example2;
 
 BEGIN
-    Example2; (* 1, 2 *)
+    Example1; (* 1, 2 *)
 END Test.

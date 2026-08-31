@@ -57,6 +57,8 @@ SDL3FUNCTION (SDL_LogMessage, 4)
 // SDL_pixels.h
 SDL3FUNCTION (SDL_GetPixelFormatDetails, 1)
 SDL3FUNCTION (SDL_MapRGB, 5)
+// SDL_platform.h
+SDL3FUNCTION (SDL_GetPlatform, 0)
 // SDL_process.h
 SDL3FUNCTION (SDL_CreateProcess, 2)
 SDL3FUNCTION (SDL_DestroyProcess, 1)

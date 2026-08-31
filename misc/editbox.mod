@@ -16,7 +16,8 @@ IN Ext IMPORT SDL3;
 IN Ext IMPORT SDL3TTF;
 
 CONST
-    FONT = '/usr/share/fonts/TTF/Inconsolata-Regular.ttf';
+    LINFONT = '/usr/share/fonts/TTF/Inconsolata-Regular.ttf';
+	WINFONT = 'C:\Windows\Fonts\Arial.ttf';
     CURSOR_BLINK_INTERVAL_MS = 500;
 
 TYPE
@@ -964,6 +965,7 @@ VAR
     edit : EditBox;
     rect, focusRect : SDL3.FRect;
     event : SDL3.Event;
+    s : SDL3.STRING;
     quit : BOOLEAN;
 BEGIN
     (* Create the window *)
@@ -981,8 +983,20 @@ BEGIN
         RETURN
     END;
     
-    (* Open the font *)
-    font := SDL3TTF.OpenFont(FONT, 18.0);
+    (* Get platform *)
+    IF ~SDL3.GetPlatform(s) THEN
+    	SDL3.LogStr("Couldn't find platform");
+        SDL3.Quit;
+        RETURN
+    END;
+
+	(* Open the font *)
+    IF s^ = "Windows" THEN
+    	font := SDL3TTF.OpenFont(WINFONT, 18.0);
+    ELSIF s^ = "Linux" THEN
+    	font := SDL3TTF.OpenFont(LINFONT, 18.0);
+    END;
+    
     IF font = NIL THEN
         SDL3.LogStr("Couldn't open font");
         SDL3.Log(SDL3.GetError());
