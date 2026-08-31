@@ -109,7 +109,7 @@ editbox$(PRG): misc/editbox.mod extsdl3ttf.lib extsdl3.lib
 	@$(EXEC) ./editbox$(PRG)
 		
 .PHONY: install
-install: extsqlite.lib extsdl3.lib
+install: extsqlite.lib extsdl3.lib extsdl3ttf.lib
 	@echo Install
 	@cp -f extsqlite.lib $(PREFIX)/lib/ecs/runtime/
 	@cp -f extsdl3.lib $(PREFIX)/lib/ecs/runtime/
